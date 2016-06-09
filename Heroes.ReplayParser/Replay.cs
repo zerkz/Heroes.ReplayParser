@@ -60,7 +60,7 @@
         public uint RandomValue { get; set; }
 
         /// <summary> Team Levels ([Team][Level] = TimeSpan) </summary>
-        public Dictionary<int, TimeSpan>[] TeamLevels { get; set; } = new Dictionary<int, TimeSpan>[2];
+        public Dictionary<int, TimeSpan?>[] TeamLevels { get; set; } = new Dictionary<int, TimeSpan?>[2];
 
         /// <summary> Periodic XP Breakdown ([Team][PeriodicXPBreakdown]) </summary>
         public List<PeriodicXPBreakdown>[] TeamPeriodicXPBreakdown { get; set; } = new List<PeriodicXPBreakdown>[2];
