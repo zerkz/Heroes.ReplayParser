@@ -68,9 +68,13 @@
 
                 for (int playerNum = 0; playerNum < replay.Players.Count(); playerNum++)
                 {
+                    var player = replay.Players[playerNum];
+                    if (player == null)
+                        continue;
+
                     // Find each player's name, and then their associated BattleTag
                     battleTagDigits.Clear();
-                    var playerNameBytes = Encoding.UTF8.GetBytes(replay.Players[playerNum].Name);
+                    var playerNameBytes = Encoding.UTF8.GetBytes(player.Name);
                     while (!reader.EndOfStream)
                     {
                         var isFound = true;
@@ -127,7 +131,7 @@
                     if (reader.EndOfStream)
                         break;
 
-                    replay.Players[playerNum].BattleTag = int.Parse(string.Join("", battleTagDigits));
+                    player.BattleTag = int.Parse(string.Join("", battleTagDigits));
                 }
             }
         }
