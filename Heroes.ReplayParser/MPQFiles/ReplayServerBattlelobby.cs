@@ -1,8 +1,7 @@
 ﻿namespace Heroes.ReplayParser
 {
     using System.IO;
-    using Heroes.ReplayParser.Streams;
-    using System;
+    using Streams;
     using System.Text;
     using System.Linq;
     using System.Collections.Generic;
@@ -66,11 +65,12 @@
 
                 // Now get the BattleTag for each player
                 var battleTagDigits = new List<char>();
-                foreach (var player in replay.Players.Where(i => i != null))
+
+                for (int playerNum = 0; playerNum < replay.Players.Count(); playerNum++)
                 {
                     // Find each player's name, and then their associated BattleTag
                     battleTagDigits.Clear();
-                    var playerNameBytes = Encoding.UTF8.GetBytes(player.Name);
+                    var playerNameBytes = Encoding.UTF8.GetBytes(replay.Players[playerNum].Name);
                     while (!reader.EndOfStream)
                     {
                         var isFound = true;
@@ -86,19 +86,48 @@
                     }
 
                     // Get the numbers from the BattleTag
-                    while (!reader.EndOfStream)
+
+                    // if player is in slot 9, there's a chance that an extra digit could
+                    // be appended to the battleTag
+                    if (playerNum == 9)
                     {
-                        var currentCharacter = (char)reader.ReadByte();
-                        if (char.IsDigit(currentCharacter))
-                            battleTagDigits.Add(currentCharacter);
-                        else
-                            break;
+                        int count = 0;
+                        while (!reader.EndOfStream)
+                        {
+                            var currentCharacter = (char)reader.ReadByte();
+                            if (currentCharacter == 'z' || currentCharacter == 'Ø')
+                            {
+                                // removed previously digit
+                                battleTagDigits.RemoveAt(count - 1);
+                                break;
+                            }
+                            else if (char.IsDigit(currentCharacter))
+                            {
+                                battleTagDigits.Add(currentCharacter);
+                                count++;
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            var currentCharacter = (char)reader.ReadByte();
+                            if (char.IsDigit(currentCharacter))
+                                battleTagDigits.Add(currentCharacter);
+                            else
+                                break;
+                        }
                     }
 
                     if (reader.EndOfStream)
                         break;
 
-                    player.BattleTag = int.Parse(string.Join("", battleTagDigits));
+                    replay.Players[playerNum].BattleTag = int.Parse(string.Join("", battleTagDigits));
                 }
             }
         }
