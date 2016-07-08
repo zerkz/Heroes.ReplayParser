@@ -118,9 +118,6 @@ namespace Heroes.ReplayParser
             
             ReplayAttributeEvents.Parse(replay, GetMpqFile(archive, ReplayAttributeEvents.FileName));
 
-            // chat messages
-            ReplayMessageEvents.Parse(replay, GetMpqFile(archive, ReplayMessageEvents.FileName));
-
             replay.TrackerEvents = ReplayTrackerEvents.Parse(GetMpqFile(archive, ReplayTrackerEvents.FileName));
 
             try
@@ -166,7 +163,7 @@ namespace Heroes.ReplayParser
                 }
 
             // Replay Message Events
-            // ReplayMessageEvents.Parse(replay, GetMpqFile(archive, ReplayMessageEvents.FileName));
+            ReplayMessageEvents.Parse(replay, GetMpqFile(archive, ReplayMessageEvents.FileName));
 
             // Replay Resumable Events
             // So far it doesn't look like this file has anything we would be interested in
