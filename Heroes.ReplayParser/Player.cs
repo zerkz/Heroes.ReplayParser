@@ -155,9 +155,9 @@ namespace Heroes.ReplayParser
 
     public class Talent
     {
-        public int TalentID { get; set; }
+        public int? TalentID { get; set; }
         public string TalentName { get; set; } = null;
-        public TimeSpan TimeSpanSelected { get; set; }
+        public TimeSpan? TimeSpanSelected { get; set; }
     }
 
     public class UpgradeEvent
@@ -187,6 +187,8 @@ namespace Heroes.ReplayParser
     public enum UpgradeEventType
     {
         NovaSnipeMasterDamageUpgrade = 1,
-        GallTalentDarkDescentUpgrade = 2
+        GallTalentDarkDescentUpgrade = 2,
+        RegenMasterStacks = 3,
+        MarksmanStacks = 4
     }
 }

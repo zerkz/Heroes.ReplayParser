@@ -93,7 +93,7 @@ namespace Heroes.ReplayParser
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ComputerPlayerFound, null);
             else if (!allowPTRRegion && replay.Players.Any(i => i.BattleNetRegionId >= 90 /* PTR/Test Region */))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PTRRegion, null);
-            else if (replay.Players.Count(i => i.IsWinner) != 5 || replay.Players.Length != 10 || (replay.GameMode != GameMode.TeamLeague && replay.GameMode != GameMode.HeroLeague && replay.GameMode != GameMode.QuickMatch && replay.GameMode != GameMode.Custom))
+            else if (replay.Players.Count(i => i.IsWinner) != 5 || replay.Players.Length != 10 || (replay.GameMode != GameMode.TeamLeague && replay.GameMode != GameMode.HeroLeague && replay.GameMode != GameMode.UnrankedDraft && replay.GameMode != GameMode.QuickMatch && replay.GameMode != GameMode.Custom))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.UnexpectedResult, null);
             else
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Success, replay);
@@ -163,7 +163,7 @@ namespace Heroes.ReplayParser
                 }
 
             // Replay Message Events
-            // ReplayMessageEvents.Parse(replay, GetMpqFile(archive, ReplayMessageEvents.FileName));
+            ReplayMessageEvents.Parse(replay, GetMpqFile(archive, ReplayMessageEvents.FileName));
 
             // Replay Resumable Events
             // So far it doesn't look like this file has anything we would be interested in
