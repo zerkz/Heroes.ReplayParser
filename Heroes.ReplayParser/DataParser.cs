@@ -22,7 +22,8 @@ namespace Heroes.ReplayParser
             // AutoSelectBug = 12, - Past issue that is no longer applicable
             PreAlphaWipe = 13,
             FileSizeTooLarge = 14,
-            PTRRegion = 15
+            PTRRegion = 15,
+            Saved = 16
         }
 
         public static Tuple<ReplayParseResult, Replay> ParseReplay(byte[] bytes, bool ignoreErrors = false, bool allowPTRRegion = false)
