@@ -23,7 +23,8 @@ namespace Heroes.ReplayParser
             PreAlphaWipe = 13,
             FileSizeTooLarge = 14,
             PTRRegion = 15,
-            Saved = 16
+            Saved = 20,
+            SqlException
         }
 
         public static Tuple<ReplayParseResult, Replay> ParseReplay(byte[] bytes, bool ignoreErrors = false, bool allowPTRRegion = false)
