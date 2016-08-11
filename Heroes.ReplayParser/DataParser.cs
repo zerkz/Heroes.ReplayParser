@@ -147,8 +147,10 @@ namespace Heroes.ReplayParser
 
             // Replay Server Battlelobby
             if (!ignoreErrors)
-                ReplayServerBattlelobby.GetBattleTags(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
-                // ReplayServerBattlelobby.Parse(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
+            {
+                //ReplayServerBattlelobby.GetBattleTags(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
+                ReplayServerBattlelobby.Parse(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
+            }
 
             // Parse Unit Data using Tracker events
             Unit.ParseUnitData(replay);
