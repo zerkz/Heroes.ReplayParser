@@ -22,7 +22,9 @@ namespace Heroes.ReplayParser
             // AutoSelectBug = 12, - Past issue that is no longer applicable
             PreAlphaWipe = 13,
             FileSizeTooLarge = 14,
-            PTRRegion = 15
+            PTRRegion = 15,
+            Saved = 20,
+            SqlException
         }
 
         public static Tuple<ReplayParseResult, Replay> ParseReplay(byte[] bytes, bool ignoreErrors = false, bool allowPTRRegion = false)
@@ -145,7 +147,10 @@ namespace Heroes.ReplayParser
 
             // Replay Server Battlelobby
             if (!ignoreErrors)
+            {
+                //ReplayServerBattlelobby.GetBattleTags(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
                 ReplayServerBattlelobby.Parse(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
+            }
 
             // Parse Unit Data using Tracker events
             Unit.ParseUnitData(replay);
