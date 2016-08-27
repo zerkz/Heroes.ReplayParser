@@ -119,6 +119,8 @@ namespace Heroes.ReplayParser
         /// Gets or sets the player's miscellaneous end game score result statistics
         /// </summary>
         public Dictionary<string, int> MiscellaneousScoreResultEventDictionary { get; set; } = new Dictionary<string, int>();
+
+        public Dictionary<string, bool> SkinsDictionary = new Dictionary<string, bool>();
     }
 
     public class ScoreResult
