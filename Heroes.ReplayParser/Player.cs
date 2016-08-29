@@ -120,7 +120,7 @@ namespace Heroes.ReplayParser
         /// </summary>
         public Dictionary<string, int> MiscellaneousScoreResultEventDictionary { get; set; } = new Dictionary<string, int>();
 
-        public Dictionary<string, bool> SkinsDictionary = new Dictionary<string, bool>();
+        public Dictionary<string, bool> SkinsDictionary { get; set; } = new Dictionary<string, bool>();
     }
 
     public class ScoreResult
