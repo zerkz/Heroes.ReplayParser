@@ -5,6 +5,8 @@
     using System;
     using System.Text;
     using System.Collections.Generic;
+    using System.Text.RegularExpressions;
+    using System.Linq;
 
     /// <summary> Parses the replay.server.battlelobby file in the replay file. </summary>
     public class ReplayServerBattlelobby
@@ -44,17 +46,17 @@
 
                 // seems to be in all replays
                 bitReader.ReadInt16();
-                bitReader.ReadBytes(684);
+                bitReader.stream.Position = bitReader.stream.Position + 684;
 
                 // seems to be in all replays
                 bitReader.ReadInt16();
-                bitReader.ReadBytes(1944);
+                bitReader.stream.Position = bitReader.stream.Position + 1944;
 
                 if (bitReader.ReadString(8) != "HumnComp")
                     throw new Exception("Not HumnComp");
 
                 // seems to be in all replays
-                bitReader.ReadBytes(19859);
+                bitReader.stream.Position = bitReader.stream.Position = bitReader.stream.Position + 19859;
 
                 // next section is language libraries?
                 // ---------------------------------------
@@ -154,7 +156,7 @@
                 {
                     for (int j = 0; j < 16; j++) // 16 is total player slots
                     {
-                        ReadByte0x00(ref bitReader);
+                        ReadByte0x00(bitReader);
                         var num = bitReader.Read(8);
                         if (num == 1)
                         { } // true;                          
@@ -170,7 +172,7 @@
                 if (replay.ReplayBuild <= 43259)
                 {
                     // Builds that are not yet supported for detailed parsing
-                    GetBattleTags(replay, ref bitReader);
+                    GetBattleTags(replay, bitReader);
                     return;
                 }
 
@@ -179,8 +181,8 @@
                 bitReader.ReadInt32();
                 bitReader.ReadBytes(33);
 
-                ReadByte0x00(ref bitReader);
-                ReadByte0x00(ref bitReader);
+                ReadByte0x00(bitReader);
+                ReadByte0x00(bitReader);
                 bitReader.ReadByte();  // why 0x19?
 
                 for (int i = 0; i < replay.ClientListByUserID.Length; i++)
@@ -201,13 +203,13 @@
                         //$"T:{TId}";
 
                         bitReader.ReadBytes(6);
-                        ReadByte0x00(ref bitReader);
-                        ReadByte0x00(ref bitReader);
-                        ReadByte0x00(ref bitReader);
+                        ReadByte0x00(bitReader);
+                        ReadByte0x00(bitReader);
+                        ReadByte0x00(bitReader);
                         bitReader.Read(6);
 
                         // get T: again
-                        TId_2 = Encoding.UTF8.GetString(ReadSpecialBlob(ref bitReader, 8));
+                        TId_2 = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
 
                         if (TId != TId_2)
                             throw new Exception("TID dup not equal");
@@ -216,22 +218,22 @@
                     }
                     else
                     {
-                        ReadByte0x00(ref bitReader);
-                        ReadByte0x00(ref bitReader);
-                        ReadByte0x00(ref bitReader);
+                        ReadByte0x00(bitReader);
+                        ReadByte0x00(bitReader);
+                        ReadByte0x00(bitReader);
                         bitReader.Read(6);
 
                         // get XXXXXXXX#YYY
-                        TId = Encoding.UTF8.GetString(ReadSpecialBlob(ref bitReader, 8));
+                        TId = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
 
                         bitReader.ReadBytes(6);
-                        ReadByte0x00(ref bitReader);
-                        ReadByte0x00(ref bitReader);
-                        ReadByte0x00(ref bitReader);
+                        ReadByte0x00(bitReader);
+                        ReadByte0x00(bitReader);
+                        ReadByte0x00(bitReader);
                         bitReader.Read(6);
 
                         // get T: again
-                        TId_2 = Encoding.UTF8.GetString(ReadSpecialBlob(ref bitReader, 8));
+                        TId_2 = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
 
                         if (TId != TId_2)
                             throw new Exception("TID dup not equal");
@@ -247,7 +249,9 @@
 
                     bitReader.ReadBytes(14); // same for all players
 
-                    if (replay.ReplayBuild >= 45228)
+                    if (replay.ReplayBuild >= 45889)
+                        bitReader.ReadBytes(38);
+                    else if (replay.ReplayBuild >= 45228)
                         bitReader.ReadBytes(37);
                     else if (replay.ReplayBuild >= 44468)
                         bitReader.ReadBytes(36);
@@ -255,18 +259,14 @@
                         bitReader.ReadBytes(35);
 
                     bool party = false;
-                    if (replay.ReplayBuild >= 45228)
-                    {
+                    if (replay.ReplayBuild >= 45889)
+                        bitReader.Read(2);
+                    else if (replay.ReplayBuild >= 45228)
                         bitReader.Read(3);
-                        party = bitReader.ReadBoolean();
-                    }
                     else
-                    {
-                        bitReader.Read(4);
-                        bitReader.Read(1);
-                        party = bitReader.ReadBoolean();
-                    }
+                        bitReader.Read(5);
 
+                    party = bitReader.ReadBoolean();
                     if (party)
                     {
                         // use this to determine who is in a party
@@ -299,11 +299,11 @@
             {
                 var bitReader = new BitReader(stream);
 
-                GetBattleTags(replay, ref bitReader);
+                GetBattleTags(replay, bitReader);
             }
         }
 
-        private static void GetBattleTags(Replay replay, ref BitReader reader)
+        private static void GetBattleTags(Replay replay, BitReader reader)
         {
             // Search for the BattleTag for each player
             var battleTagDigits = new List<char>();
@@ -354,7 +354,7 @@
             }
         }
 
-        public static byte[] ReadSpecialBlob(ref BitReader bitReader, int numBitsForLength)
+        public static byte[] ReadSpecialBlob(BitReader bitReader, int numBitsForLength)
         {
             var stringLength = bitReader.Read(numBitsForLength);
             bitReader.AlignToByte();
@@ -362,10 +362,71 @@
             return bitReader.ReadBytes((int)stringLength);
         }
 
-        private static void ReadByte0x00(ref BitReader bitReader)
+        private static void ReadByte0x00(BitReader bitReader)
         {
             if (bitReader.ReadByte() != 0)
                 throw new Exception("Not 0x00");
+        }
+    }
+
+    public static class StandaloneBattleLobbyParser
+    {
+        public static Replay Parse(byte[] data)
+        {
+            var stringData = Encoding.UTF8.GetString(data);
+
+            var replay = new Replay();
+
+            // Find player region using Regex
+            var playerBattleNetRegionId = 99;
+            switch (Regex.Match(stringData, @"s2mh..(US|EU|KR|CN|XX)").Value.Substring(6))
+            {
+                case "US":
+                    playerBattleNetRegionId = 1;
+                    break;
+                case "EU":
+                    playerBattleNetRegionId = 2;
+                    break;
+                case "KR":
+                    playerBattleNetRegionId = 3;
+                    break;
+                case "CN":
+                    playerBattleNetRegionId = 5;
+                    break;
+                case "XX":
+                default:
+                    break;
+            }
+
+            // Find player BattleTags using Regex
+            replay.Players = Regex.Matches(stringData, @"(\p{L}|\d){3,24}#\d{4,10}[zØ]?").Cast<Match>().Select(i => i.Value.Split('#')).Select(i => new Player {
+                Name = i[0],
+                BattleTag = int.Parse(i[1].Last() == 'z' || i[1].Last() == 'Ø' ? i[1].Substring(0, i[1].Length - 2) : i[1]),
+                BattleNetRegionId = playerBattleNetRegionId
+            }).ToArray();
+
+            // For all game modes other than Custom, players should be ordered by team in the lobby
+            // This may be true for Custom games as well; more testing needed
+            for (var i = 0; i < replay.Players.Length; i++)
+                replay.Players[i].Team = i >= 5 ? 1 : 0;
+
+            return replay;
+        }
+
+        public static string Base64EncodeStandaloneBattlelobby(Heroes.ReplayParser.Replay replay)
+        {
+            return Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(",", replay.Players.Select(i => i.BattleNetRegionId + "#" + i.Name + "#" + i.BattleTag + "#" + i.Team))));
+        }
+
+        public static Replay Base64DecodeStandaloneBattlelobby(string base64EncodedData)
+        {
+            return new Replay {
+                Players = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedData)).Split(',').Select(i => i.Split('#')).Select(i => new Player {
+                    Name = i[1],
+                    BattleTag = int.Parse(i[2]),
+                    BattleNetRegionId = int.Parse(i[0]),
+                    Team = int.Parse(i[3])
+                }).ToArray() };
         }
     }
 }
