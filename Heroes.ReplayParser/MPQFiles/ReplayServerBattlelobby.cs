@@ -141,10 +141,12 @@
 
                 // All the Heroes, skins, mounts, effects, some other weird stuff (Cocoon, ArtifactSlot2, TestMountRideSurf, etc...)
                 // --------------------------------------------------------------
+                List<string> skins = new List<string>();
                 int skinArrayLength = bitReader.ReadInt32();
+              
                 for (int i = 0; i < skinArrayLength; i++)
                 {
-                    bitReader.ReadString(bitReader.ReadByte()); // the name of the "skin"
+                    skins.Add(bitReader.ReadString(bitReader.ReadByte()));
                 }
 
                 // this next part is just a whole bunch of 0x00 and 0x01
@@ -158,12 +160,19 @@
                     {
                         ReadByte0x00(bitReader);
                         var num = bitReader.Read(8);
-                        if (num == 1)
-                        { } // true;                          
-                        else if (num == 0)
-                        { } // false;                          
-                        else
-                            throw new NotImplementedException();
+                        if (replay.ClientListByUserID[j] != null)
+                        {
+                            if (num == 1)
+                            {
+                                replay.ClientListByUserID[j].SkinsDictionary.Add(skins[i], true);
+                            }
+                            else if (num == 0)
+                            {
+                                replay.ClientListByUserID[j].SkinsDictionary.Add(skins[i], false);
+                            }
+                            else
+                                throw new NotImplementedException();
+                        }
                     }
                 }
 
