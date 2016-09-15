@@ -22,7 +22,9 @@ namespace Heroes.ReplayParser
             // AutoSelectBug = 12, - Past issue that is no longer applicable
             PreAlphaWipe = 13,
             FileSizeTooLarge = 14,
-            PTRRegion = 15
+            PTRRegion = 15,
+            Saved = 20,
+            SqlException
         }
 
         public static readonly Dictionary<string, Tuple<double, double, double, double>> MapOffsets = new Dictionary<string, Tuple<double, double, double, double>>
@@ -159,8 +161,10 @@ namespace Heroes.ReplayParser
 
             // Replay Server Battlelobby
             if (!ignoreErrors)
-                ReplayServerBattlelobby.GetBattleTags(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
-                // ReplayServerBattlelobby.Parse(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
+            {
+                //ReplayServerBattlelobby.GetBattleTags(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
+                ReplayServerBattlelobby.Parse(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
+            }
 
             // Parse Unit Data using Tracker events
             Unit.ParseUnitData(replay);
@@ -178,7 +182,7 @@ namespace Heroes.ReplayParser
                 }
 
             // Replay Message Events
-            // ReplayMessageEvents.Parse(replay, GetMpqFile(archive, ReplayMessageEvents.FileName));
+            ReplayMessageEvents.Parse(replay, GetMpqFile(archive, ReplayMessageEvents.FileName));
 
             // Replay Resumable Events
             // So far it doesn't look like this file has anything we would be interested in

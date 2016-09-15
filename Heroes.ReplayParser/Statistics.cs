@@ -13,7 +13,7 @@ namespace Heroes.ReplayParser
             
             for (var i = 0; i < replay.TeamLevels.Length; i++)
             {
-                replay.TeamLevels[i] = new Dictionary<int, TimeSpan>();
+                replay.TeamLevels[i] = new Dictionary<int, TimeSpan?>();
                 replay.TeamPeriodicXPBreakdown[i] = new List<PeriodicXPBreakdown>();
             }
 
