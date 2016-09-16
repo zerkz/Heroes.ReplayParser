@@ -4,4 +4,5 @@ This fork is being used the in the [HeroesParserData](https://github.com/koliva8
 
 The difference between this fork and the source
 * Enabled chat parsing
+* Extended Battlelobby parsing
 * A few properties are made nullable
