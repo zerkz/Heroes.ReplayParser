@@ -226,6 +226,6 @@ namespace Heroes.ReplayParser
         MostAltarDamage = 1010,
         // Lost Cavern = 1011 - No map award
         MostDamageDoneToZerg = 1012,
-        // Warhead Junction = 1013 - TODO: Check for map award when this map is in PTR or released
+        MostNukeDamageDone = 1013
     }
 }
