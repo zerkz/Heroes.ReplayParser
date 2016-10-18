@@ -289,7 +289,7 @@
                         // use this to determine who is in a party
                         // those in the same party will have the same exact 8 bytes of data
                         // the party leader is the first one (in the order of the client list)
-                        bitReader.ReadBytes(8);
+                        replay.ClientListByUserID[i].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32();                
                     }
 
                     bitReader.Read(1);

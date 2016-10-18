@@ -121,6 +121,8 @@ namespace Heroes.ReplayParser
         public Dictionary<string, int> MiscellaneousScoreResultEventDictionary { get; set; } = new Dictionary<string, int>();
 
         public Dictionary<string, bool> SkinsDictionary { get; set; } = new Dictionary<string, bool>();
+
+        public long PartyValue { get; set; }
     }
 
     public class ScoreResult
