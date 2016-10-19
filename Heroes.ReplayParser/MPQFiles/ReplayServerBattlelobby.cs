@@ -264,7 +264,9 @@
 
                     bitReader.ReadBytes(14); // same for all players
 
-                    if (replay.ReplayBuild >= 45889)
+                    if (replay.ReplayBuild >= 47219 || replay.ReplayBuild == 47024)
+                        bitReader.ReadBytes(39);
+                    else if (replay.ReplayBuild >= 45889)
                         bitReader.ReadBytes(38);
                     else if (replay.ReplayBuild >= 45228)
                         bitReader.ReadBytes(37);
@@ -273,8 +275,10 @@
                     else
                         bitReader.ReadBytes(35);
 
-                    bool party = false;
-                    if (replay.ReplayBuild >= 46690 || replay.ReplayBuild == 46416)
+
+                    if (replay.ReplayBuild >= 47219 || replay.ReplayBuild == 47024)
+                        bitReader.Read(6);
+                    else if (replay.ReplayBuild >= 46690 || replay.ReplayBuild == 46416)
                         bitReader.Read(5);
                     else if (replay.ReplayBuild >= 45889)
                         bitReader.Read(2);
@@ -283,7 +287,7 @@
                     else
                         bitReader.Read(5);
 
-                    party = bitReader.ReadBoolean();
+                    bool party = bitReader.ReadBoolean();
                     if (party)
                     {
                         // use this to determine who is in a party
