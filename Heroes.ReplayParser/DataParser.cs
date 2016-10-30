@@ -17,14 +17,15 @@ namespace Heroes.ReplayParser
             // ChatGlitch = 4, - Past issue that is no longer applicable
             TryMeMode = 5,
             UnexpectedResult = 9,
-            Exception = 10,
+            ParserException = 10,
             FileNotFound = 11,
             // AutoSelectBug = 12, - Past issue that is no longer applicable
             PreAlphaWipe = 13,
             FileSizeTooLarge = 14,
             PTRRegion = 15,
             Saved = 20,
-            SqlException
+            SqlException,
+            NotYetSupported,
         }
 
         public static readonly Dictionary<string, Tuple<double, double, double, double>> MapOffsets = new Dictionary<string, Tuple<double, double, double, double>>
@@ -61,21 +62,21 @@ namespace Heroes.ReplayParser
             }
             catch
             {
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Exception, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ParserException, null);
             }
         }
 
         public static Tuple<ReplayParseResult, Replay> ParseReplay(string fileName, bool ignoreErrors, bool deleteFile, bool allowPTRRegion = false)
         {
+            var replay = new Replay();
+
             try
             {
-                var replay = new Replay();
-
                 // File in the version numbers for later use.
                 MpqHeader.ParseHeader(replay, fileName);
 
                 if (!ignoreErrors && replay.ReplayBuild < 32455)
-                    return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, null);
+                    return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, new Replay { ReplayBuild = replay.ReplayBuild });
 
                 using (var archive = new MpqArchive(fileName))
                     ParseReplayArchive(replay, archive, ignoreErrors);
@@ -87,7 +88,7 @@ namespace Heroes.ReplayParser
             }
             catch
             {
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Exception, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ParserException, new Replay { ReplayBuild = replay.ReplayBuild });
             }
         }
 
@@ -97,20 +98,20 @@ namespace Heroes.ReplayParser
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.UnexpectedResult, replay);
             else if (replay.Players.Length == 1)
                 // Filter out 'Try Me' games, as they have unusual format that throws exceptions in other areas
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.TryMeMode, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.TryMeMode, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Players.Length <= 5)
                 // Custom game with all computer players on the opposing team won't register them as players at all (Noticed at build 34053)
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ComputerPlayerFound, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ComputerPlayerFound, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Players.All(i => !i.IsWinner) || replay.ReplayLength.TotalMinutes < 2)
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Incomplete, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Incomplete, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Players.Any(i => i.PlayerType == PlayerType.Computer || i.Character == "Random Hero" || i.Name.Contains(' ')))
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ComputerPlayerFound, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ComputerPlayerFound, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (!allowPTRRegion && replay.Players.Any(i => i.BattleNetRegionId >= 90 /* PTR/Test Region */))
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PTRRegion, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PTRRegion, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Players.Count(i => i.IsWinner) != 5 || replay.Players.Length != 10 || (replay.GameMode != GameMode.TeamLeague && replay.GameMode != GameMode.HeroLeague && replay.GameMode != GameMode.UnrankedDraft && replay.GameMode != GameMode.QuickMatch && replay.GameMode != GameMode.Custom))
-                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.UnexpectedResult, null);
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.UnexpectedResult, new Replay { ReplayBuild = replay.ReplayBuild });
             else
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Success, replay);
         }
