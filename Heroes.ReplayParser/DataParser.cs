@@ -110,7 +110,7 @@ namespace Heroes.ReplayParser
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ComputerPlayerFound, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (!allowPTRRegion && replay.Players.Any(i => i.BattleNetRegionId >= 90 /* PTR/Test Region */))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PTRRegion, new Replay { ReplayBuild = replay.ReplayBuild });
-            else if (replay.Players.Count(i => i.IsWinner) != 5 || replay.Players.Length != 10 || (replay.GameMode != GameMode.TeamLeague && replay.GameMode != GameMode.HeroLeague && replay.GameMode != GameMode.UnrankedDraft && replay.GameMode != GameMode.QuickMatch && replay.GameMode != GameMode.Custom))
+            else if (replay.Players.Count(i => i.IsWinner) != 5 || replay.Players.Length != 10 || (replay.GameMode != GameMode.TeamLeague && replay.GameMode != GameMode.HeroLeague && replay.GameMode != GameMode.UnrankedDraft && replay.GameMode != GameMode.QuickMatch && replay.GameMode != GameMode.Custom && replay.GameMode != GameMode.Brawl))))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.UnexpectedResult, new Replay { ReplayBuild = replay.ReplayBuild });
             else
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Success, replay);
