@@ -7,5 +7,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyProduct("Heroes.ReplayParser")]
 [assembly: ComVisible(false)]
 [assembly: Guid("ab85402d-b34a-42ed-b74e-02c2656896d8")]
-[assembly: AssemblyVersion("1.2.1")]
-[assembly: AssemblyFileVersion("1.2.1")]
+[assembly: AssemblyVersion("1.2.2")]
+[assembly: AssemblyFileVersion("1.2.2")]
