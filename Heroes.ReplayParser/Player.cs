@@ -123,6 +123,8 @@ namespace Heroes.ReplayParser
         public Dictionary<string, bool> SkinsDictionary { get; set; } = new Dictionary<string, bool>();
 
         public long PartyValue { get; set; }
+
+        public string BattleNetTId { get; set; }
     }
 
     public class ScoreResult
