@@ -406,9 +406,11 @@ namespace Heroes.ReplayParser
                             // Dragon Shire - This is populated using Unit data at the top of this function
                             case "DragonKnightActivated": break;    // {StatGameEvent: {"DragonKnightActivated", , [{{"Event"}, 1}], [{{"TeamID"}, 2}]}}
 
+                            case "EndOfGameUpVotesCollected": break;// {StatGameEvent: {"EndOfGameUpVotesCollected", , [{{"Player"}, 10}, {{"Voter"}, 10}, {{"UpVotesReceived"}, 1}], }}
+
                             default:
                                 // New Stat Game Event - let's log it until we can identify and properly track it
-                                playerIDDictionary[(int) trackerEvent.Data.dictionary[0].vInt.Value].MiscellaneousUpgradeEventDictionary[trackerEvent.Data.dictionary[0].blobText] = true;
+                                playerIDDictionary.Values.First().MiscellaneousUpgradeEventDictionary[trackerEvent.Data.dictionary[0].blobText] = true;
                                 break;
                         }
                         break;
@@ -564,6 +566,15 @@ namespace Heroes.ReplayParser
                                 case "EndOfMatchAwardMostProtectionBoolean":
                                 case "EndOfMatchAward0DeathsBoolean":
                                 case "EndOfMatchAwardMostRootsBoolean":
+
+                                case "EndOfMatchAward0OutnumberedDeathsBoolean":
+                                case "EndOfMatchAwardMostDaredevilEscapesBoolean":
+                                case "EndOfMatchAwardMostEscapesBoolean":
+                                case "EndOfMatchAwardMostSilencesBoolean":
+                                case "EndOfMatchAwardMostTeamfightDamageTakenBoolean":
+                                case "EndOfMatchAwardMostTeamfightHealingDoneBoolean":
+                                case "EndOfMatchAwardMostTeamfightHeroDamageDoneBoolean":
+                                case "EndOfMatchAwardMostVengeancesPerformedBoolean":
                                     for (var i = 0; i < scoreResultEventValueArray.Length; i++)
                                         if (scoreResultEventValueArray[i].HasValue && scoreResultEventValueArray[i].Value == 1)
                                             switch (scoreResultEventKey)
@@ -598,6 +609,7 @@ namespace Heroes.ReplayParser
                                                 case "EndOfMatchAwardMapSpecificBoolean":
                                                     // Instead of tracking this generic one, just check if the player has one of the other map-specific Match Awards above 1000
                                                     break;
+
                                                 case "EndOfMatchAwardMostDragonShrinesCapturedBoolean":
                                                     replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostDragonShrinesCaptured);
                                                     break;
@@ -649,6 +661,31 @@ namespace Heroes.ReplayParser
                                                     break;
                                                 case "EndOfMatchAwardMostRootsBoolean":
                                                     replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostRoots);
+                                                    break;
+
+                                                case "EndOfMatchAward0OutnumberedDeathsBoolean":
+                                                    replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.ZeroOutnumberedDeaths);
+                                                    break;
+                                                case "EndOfMatchAwardMostDaredevilEscapesBoolean":
+                                                    replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostDaredevilEscapes);
+                                                    break;
+                                                case "EndOfMatchAwardMostEscapesBoolean":
+                                                    replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostEscapes);
+                                                    break;
+                                                case "EndOfMatchAwardMostSilencesBoolean":
+                                                    replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostSilences);
+                                                    break;
+                                                case "EndOfMatchAwardMostTeamfightDamageTakenBoolean":
+                                                    replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostTeamfightDamageTaken);
+                                                    break;
+                                                case "EndOfMatchAwardMostTeamfightHealingDoneBoolean":
+                                                    replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostTeamfightHealingDone);
+                                                    break;
+                                                case "EndOfMatchAwardMostTeamfightHeroDamageDoneBoolean":
+                                                    replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostTeamfightHeroDamageDone);
+                                                    break;
+                                                case "EndOfMatchAwardMostVengeancesPerformedBoolean":
+                                                    replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostVengeancesPerformed);
                                                     break;
                                             }
                                     break;
