@@ -156,6 +156,9 @@
                 else
                     skinArrayLength = bitReader.ReadInt32();
 
+                if (skinArrayLength > 1000)
+                    throw new Exception("skinArrayLength is an unusually large number");
+
                 for (int i = 0; i < skinArrayLength; i++)
                 {
                     skins.Add(bitReader.ReadString(bitReader.ReadByte()));
