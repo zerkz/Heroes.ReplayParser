@@ -206,12 +206,12 @@ namespace Heroes.ReplayParser
 
                                     if (playerIDDictionary[playerID].Talents.Length > playerIDTalentIndexDictionary[playerID])
                                         playerIDDictionary[playerID].Talents[playerIDTalentIndexDictionary[playerID]++].TalentName = trackerEvent.Data.dictionary[1].optionalData.array[0].dictionary[1].blobText;
-                                    else
-                                        // A talent was selected while a player was disconnected
-                                        // This makes it more difficult to match a 'TalentName' with a 'TalentID'
-                                        // Since this is rare, I'll just clear all 'TalentName' for that player
-                                        foreach (var talent in playerIDDictionary[playerID].Talents)
-                                            talent.TalentName = null;
+                                    //else
+                                    //    // A talent was selected while a player was disconnected
+                                    //    // This makes it more difficult to match a 'TalentName' with a 'TalentID'
+                                    //    // Since this is rare, I'll just clear all 'TalentName' for that player
+                                    //    foreach (var talent in playerIDDictionary[playerID].Talents)
+                                    //        talent.TalentName = null;
                                 }
                                 break;
 
