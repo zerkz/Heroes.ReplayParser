@@ -123,10 +123,9 @@ namespace Heroes.ReplayParser
 
                             case "IsOrderPlayer":
                             case "IsChaosPlayer":
-                                // TODO: FIGURE OUT WHAT THIS IS
+                                // Apparently this is just an old news legacy name for Blue team and Red team
+                                // https://www.reddit.com/r/heroesofthestorm/comments/5idgxv/who_is_chaos_and_why_are_they_in_my_try_mode/db7gszk/
                                 // This shows up on 'Warhead Junction' replays from the 9/19/2016 PTR
-                                // I've only been able to look at a few replays, but so far, players 1-5 are 'Order', and 6-10 are 'Chaos'
-                                // Perhaps at a time, the map was intended to be split like the Diablo maps?
                                 break;
 
                             case "GatesAreOpen":
@@ -258,6 +257,8 @@ namespace Heroes.ReplayParser
                             case "GatesOpen": break;                // {StatGameEvent: {"GatesOpen", , , }}
                             case "PlayerDeath": break;              // {StatGameEvent: {"PlayerDeath", , [{{"PlayerID"}, 8}, {{"KillingPlayer"}, 1}, {{"KillingPlayer"}, 2}, {{"KillingPlayer"}, 3}, {{"KillingPlayer"}, 4}, {{"KillingPlayer"}, 5}], [{{"PositionX"}, 130}, {{"PositionY"}, 80}]}}
                             case "RegenGlobePickedUp": break;       // {StatGameEvent: {"RegenGlobePickedUp", , [{{"PlayerID"}, 1}], }}
+                            case "ChoGall Cho Spawn Error": break;  // {StatGameEvent: {"ChoGall Cho Spawn Error", , [{{"PlayerID"}, 6}], }}
+                            case "ChoGall Gall Spawn Error": break; // {StatGameEvent: {"ChoGall Gall Spawn Error", , [{{"PlayerID"}, 6}], }}
 
                             case "EndOfGameRegenMasterStacks":      // {StatGameEvent: {"EndOfGameRegenMasterStacks", [{{"Hero"}, "HeroZeratul"}], [{{"PlayerID"}, 7}, {{"Stack Count"}, 23}], }}
                                 playerIDDictionary[(int) trackerEvent.Data.dictionary[2].optionalData.array[0].dictionary[1].vInt.Value].UpgradeEvents.Add(new UpgradeEvent {
@@ -400,6 +401,15 @@ namespace Heroes.ReplayParser
                                 replay.TeamObjectives[trackerEvent.Data.dictionary[2].optionalData.array[1].dictionary[1].vInt.Value - 1].Add(new TeamObjective {
                                     TimeSpan = trackerEvent.TimeSpan,
                                     TeamObjectiveType = TeamObjectiveType.InfernalShrinesPunisherKilledWithHeroDamageDone,
+                                    Value = (int) trackerEvent.Data.dictionary[3].optionalData.array[1].dictionary[1].vInt.Value });
+                                break;
+
+                            // Haunted Mines
+                            case "GolemLanes": break;               // {StatGameEvent: {"GolemLanes", , [{{"TopGolemTeam"}, 1}, {{"BottomGolemTeam"}, 2}], }}
+                            case "GraveGolemSpawned":               // {StatGameEvent: {"GraveGolemSpawned", , [{{"Event"}, 1}], [{{"TeamID"}, 2}, {{"SkullCount"}, 34}]}}
+                                replay.TeamObjectives[trackerEvent.Data.dictionary[3].optionalData.array[0].dictionary[1].vInt.Value - 1].Add(new TeamObjective {
+                                    TimeSpan = trackerEvent.TimeSpan,
+                                    TeamObjectiveType = TeamObjectiveType.HauntedMinesGraveGolemSpawnedWithSkullCount,
                                     Value = (int) trackerEvent.Data.dictionary[3].optionalData.array[1].dictionary[1].vInt.Value });
                                 break;
 
@@ -692,8 +702,24 @@ namespace Heroes.ReplayParser
 
                                 // Misc Events
                                 case "GameScore": // 0 for all players (Last checked 9/7/2016)
+                                case "TeamLevel":
                                 case "TeamTakedowns":
                                 case "Role":
+
+                                // New Stats Added in PTR 12/6/2016
+                                // Currently all 0 values - if these are filled in, let's add them to the Player.ScoreResult object
+                                case "ProtectionGivenToAllies":
+                                case "TimeSilencingEnemyHeroes":
+                                case "TimeRootingEnemyHeroes":
+                                case "TimeStunningEnemyHeroes":
+                                case "ClutchHealsPerformed":
+                                case "EscapesPerformed":
+                                case "VengeancesPerformed":
+                                case "OutnumberedDeaths":
+                                case "TeamfightEscapesPerformed":
+                                case "TeamfightHealingDone":
+                                case "TeamfightDamageTaken":
+                                case "TeamfightHeroDamage":
 
                                 // Map Objectives
                                 case "DamageDoneToZerg":
@@ -711,6 +737,7 @@ namespace Heroes.ReplayParser
                                 case "BlackheartDoubloonsCollected":
                                 case "BlackheartDoubloonsTurnedIn":
                                 case "MinesSkullsCollected":
+                                case "NukeDamageDone":
 
                                 // Special Events
                                 case "LunarNewYearEventCompleted":

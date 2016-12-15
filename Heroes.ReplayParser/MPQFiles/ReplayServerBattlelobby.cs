@@ -253,7 +253,7 @@
                     if (replay.ReplayBuild >= 48027)
                         bitReader.ReadInt16();
                     else
-                        bitReader.ReadBytes(4);
+                        bitReader.ReadInt32();
 
                     // this data is a repeat of the usable skins section above
                     //bitReader.stream.Position = bitReader.stream.Position = bitReader.stream.Position + (skinArrayLength * 2);
@@ -553,7 +553,8 @@
             }
 
             // Find player BattleTags using Regex
-            replay.Players = Regex.Matches(stringData, @"(\p{L}|\d){3,24}#\d{4,10}[zØ]?").Cast<Match>().Select(i => i.Value.Split('#')).Select(i => new Player {
+            replay.Players = Regex.Matches(stringData, @"(\p{L}|\d){3,24}#\d{4,10}[zØ]?").Cast<Match>().Select(i => i.Value.Split('#')).Select(i => new Player
+            {
                 Name = i[0],
                 BattleTag = int.Parse(i[1].Last() == 'z' || i[1].Last() == 'Ø' ? i[1].Substring(0, i[1].Length - 2) : i[1]),
                 BattleNetRegionId = playerBattleNetRegionId
@@ -574,13 +575,16 @@
 
         public static Replay Base64DecodeStandaloneBattlelobby(string base64EncodedData)
         {
-            return new Replay {
-                Players = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedData)).Split(',').Select(i => i.Split('#')).Select(i => new Player {
+            return new Replay
+            {
+                Players = Encoding.UTF8.GetString(Convert.FromBase64String(base64EncodedData)).Split(',').Select(i => i.Split('#')).Select(i => new Player
+                {
                     Name = i[1],
                     BattleTag = int.Parse(i[2]),
                     BattleNetRegionId = int.Parse(i[0]),
                     Team = int.Parse(i[3])
-                }).ToArray() };
+                }).ToArray()
+            };
         }
     }
 }
