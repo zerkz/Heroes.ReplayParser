@@ -23,9 +23,6 @@ namespace Heroes.ReplayParser
             PreAlphaWipe = 13,
             FileSizeTooLarge = 14,
             PTRRegion = 15,
-            Saved = 20,
-            SqlException,
-            NotYetSupported,
             ParserException
         }
 
