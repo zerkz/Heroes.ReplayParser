@@ -153,7 +153,7 @@
 
                 if (replay.ReplayBuild >= 48027)
                     skinArrayLength = bitReader.ReadInt16();
-                else 
+                else
                     skinArrayLength = bitReader.ReadInt32();
 
                 if (skinArrayLength > 1000)
@@ -182,11 +182,11 @@
                         {
                             if (num > 0)
                             {
-                                // usable
+                                replay.ClientListByUserID[j].SkinsDictionary.Add(skins[i], true);
                             }
                             else if (num == 0)
                             {
-                                // not usable
+                                replay.ClientListByUserID[j].SkinsDictionary.Add(skins[i], false);
                             }
                             else
                                 throw new NotImplementedException();
@@ -203,7 +203,7 @@
                     GetBattleTags(replay, bitReader);
                     return;
                 }
-
+                
                 bitReader.ReadInt32();
                 bitReader.ReadBytes(33);
 
@@ -241,6 +241,8 @@
                         TId = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
                     }
 
+                    replay.ClientListByUserID[player].BattleNetTId = TId;
+
                     // next 30 bytes
                     bitReader.ReadBytes(4); // same for all players
                     bitReader.ReadBytes(14);
@@ -274,7 +276,7 @@
                         // use this to determine who is in a party
                         // those in the same party will have the same exact 8 bytes of data
                         // the party leader is the first one (in the order of the client list)
-                        bitReader.ReadBytes(8);
+                        replay.ClientListByUserID[player].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32();                
                     }
 
                     bitReader.Read(1);
@@ -356,6 +358,7 @@
                             throw new Exception("TID dup not equal");
                     }
                 }
+                replay.ClientListByUserID[i].BattleNetTId = TId;
 
                 // next 31 bytes
                 bitReader.ReadBytes(4); // same for all players
@@ -396,7 +399,7 @@
                     // use this to determine who is in a party
                     // those in the same party will have the same exact 8 bytes of data
                     // the party leader is the first one (in the order of the client list)
-                    bitReader.ReadBytes(8);
+                    replay.ClientListByUserID[i].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32();
                 }
 
                 bitReader.Read(1);

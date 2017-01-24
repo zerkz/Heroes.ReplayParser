@@ -119,6 +119,12 @@ namespace Heroes.ReplayParser
         /// Gets or sets the player's miscellaneous end game score result statistics
         /// </summary>
         public Dictionary<string, int> MiscellaneousScoreResultEventDictionary { get; set; } = new Dictionary<string, int>();
+
+        public Dictionary<string, bool> SkinsDictionary { get; set; } = new Dictionary<string, bool>();
+
+        public long PartyValue { get; set; }
+
+        public string BattleNetTId { get; set; }
     }
 
     public class ScoreResult
@@ -160,9 +166,9 @@ namespace Heroes.ReplayParser
 
     public class Talent
     {
-        public int TalentID { get; set; }
+        public int? TalentID { get; set; }
         public string TalentName { get; set; } = null;
-        public TimeSpan TimeSpanSelected { get; set; }
+        public TimeSpan? TimeSpanSelected { get; set; }
     }
 
     public class UpgradeEvent
