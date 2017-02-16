@@ -33,7 +33,7 @@ namespace Heroes.ReplayParser
             { "Dragon Shire", new Tuple<double, double, double, double>(0.0, 32.0, 1.035, 0.941) },
             { "Blackheart's Bay", new Tuple<double, double, double, double>(-3.0, 12.0, 1.03, 0.935) },
             { "Sky Temple", new Tuple<double, double, double, double>(-0.25, 22.5, 1.04, 0.942) },
-            { "Haunted Mines", new Tuple<double, double, double, double>(-3.0, 6.0, 1.027, 0.930) },
+            // { "Haunted Mines", new Tuple<double, double, double, double>(-3.0, 6.0, 1.027, 0.930) }, - Old 'Haunted Mines' map
             { "Tomb of the Spider Queen", new Tuple<double, double, double, double>(-4.5, 28.0, 1.075, 0.973) },
             { "Infernal Shrines", new Tuple<double, double, double, double>(6.5, 41.0, 1.0, 0.92) },
             { "Towers of Doom", new Tuple<double, double, double, double>(4.0, 42.0, 1.03, 0.925) },
@@ -102,6 +102,8 @@ namespace Heroes.ReplayParser
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ComputerPlayerFound, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Players.All(i => !i.IsWinner) || replay.ReplayLength.TotalMinutes < 2)
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Incomplete, new Replay { ReplayBuild = replay.ReplayBuild });
+            else if (replay.Timestamp == DateTime.MinValue)
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.UnexpectedResult, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Players.Any(i => i.PlayerType == PlayerType.Computer || i.Character == "Random Hero" || i.Name.Contains(' ')))
@@ -121,12 +123,18 @@ namespace Heroes.ReplayParser
             // Replay Details
             ReplayDetails.Parse(replay, GetMpqFile(archive, ReplayDetails.FileName), ignoreErrors);
 
-            if (!ignoreErrors && (replay.Players.Length != 10 || replay.Players.Count(i => i.IsWinner) != 5))
-                // Filter out 'Try Me' games, any games without 10 players, and incomplete games
-                return;
-            else if (!ignoreErrors && replay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
-                // Technical Alpha replays
-                return;
+            if (!ignoreErrors)
+            {
+                if (replay.Players.Length != 10 || replay.Players.Count(i => i.IsWinner) != 5)
+                    // Filter out 'Try Me' games, any games without 10 players, and incomplete games
+                    return;
+                else if (replay.Timestamp == DateTime.MinValue)
+                    // Uncommon issue when parsing replay.details
+                    return;
+                else if (replay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
+                    // Technical Alpha replays
+                    return;
+            }
 
             // Replay Init Data
             ReplayInitData.Parse(replay, GetMpqFile(archive, ReplayInitData.FileName));
