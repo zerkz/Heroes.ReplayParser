@@ -249,7 +249,12 @@
                     bitReader.ReadBytes(14);
                     bitReader.ReadBytes(12); // same for all players
 
-                    if (replay.ReplayBuild >= 51609)
+                    if (replay.ReplayBuild >= 52124)
+                    {
+                        bitReader.ReadBytes(47);
+                        bitReader.Read(4);
+                    }
+                    else if (replay.ReplayBuild >= 51609)
                     {
                         bitReader.ReadBytes(46);
                         bitReader.Read(7);
