@@ -177,7 +177,7 @@
                         // new values beginning on ptr 47801
                         // 0xC3 = free to play?
                         // more values: 0xC1, 0x02, 0x83
-                        // Note: New values gone with build 51779
+                        // Note: New values gone with build 51779 
                         var num = bitReader.Read(8);
                         if (replay.ClientListByUserID[j] != null)
                         {
