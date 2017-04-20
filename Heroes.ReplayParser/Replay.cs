@@ -5,6 +5,11 @@
 
     public class Replay
     {
+        /// <summary>
+        /// Latest build supported by the parser
+        /// </summary>
+        public int LatestSupportedBuild => 51779;
+
         /// <summary> Gets a list of all messages which took place during the game. </summary>
         public List<Message> Messages { get; set; } = new List<Message>();
 
