@@ -145,6 +145,7 @@
         FrozenShrine = 3
     }
 
+    [Flags]
     public enum GameMode
     {
         Unknown = 0,
