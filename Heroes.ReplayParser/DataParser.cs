@@ -23,9 +23,6 @@ namespace Heroes.ReplayParser
             PreAlphaWipe = 13,
             FileSizeTooLarge = 14,
             PTRRegion = 15,
-            Saved = 20,
-            SqlException,
-            NotYetSupported,
             ParserException
         }
 
@@ -148,7 +145,7 @@ namespace Heroes.ReplayParser
 
             try
             {
-                replay.GameEvents = ReplayGameEvents.Parse(GetMpqFile(archive, ReplayGameEvents.FileName), replay.ClientListByUserID, replay.ReplayBuild);
+                replay.GameEvents = ReplayGameEvents.Parse(GetMpqFile(archive, ReplayGameEvents.FileName), replay.ClientListByUserID, replay.ReplayBuild, replay.ReplayVersionMajor);
                 replay.IsGameEventsParsedSuccessfully = true;
             }
             catch

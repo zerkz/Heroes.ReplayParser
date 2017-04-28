@@ -200,8 +200,9 @@ namespace Heroes.ReplayParser
         NovaSnipeMasterDamageUpgrade = 1,
         GallTalentDarkDescentUpgrade = 2,
         RegenMasterStacks = 3,
-        MarksmanStacks = 4
-    }
+        MarksmanStacks = 4,
+		WitchDoctorPlagueofToadsPandemicTalentCompletion = 5
+	}
 
     public enum MatchAwardType
     {
@@ -237,13 +238,14 @@ namespace Heroes.ReplayParser
         MostCurseDamageDone = 1003,
         MostDragonShrinesCaptured = 1004,
         MostDamageToPlants = 1005,
-        // Haunted Mines = 1006 - No map award
+		MostSkullsCollected = 1006,
         MostDamageToMinions = 1007,
         MostTimeInTemple = 1008,
         MostGemsTurnedIn = 1009,
         MostAltarDamage = 1010,
         // Lost Cavern = 1011 - No map award
         MostDamageDoneToZerg = 1012,
-        MostNukeDamageDone = 1013
+        MostNukeDamageDone = 1013,
+		MostTimePushing = 1016
     }
 }

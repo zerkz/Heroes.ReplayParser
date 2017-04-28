@@ -131,7 +131,9 @@ namespace Heroes.ReplayParser
                             case "GatesAreOpen":
                             case "MinionsAreSpawning":
                             case "GallTalentNetherCallsUpgrade":
-                            case "TracerJumperButtonSwap":
+							case "GallDreadOrbDoubleBackTalentUpgrade":
+							case "TracerJumperButtonSwap":
+							case "DisplayLockedMapMechanicAbility":
                                 // Not really interested in these
                                 break;
 
@@ -151,6 +153,13 @@ namespace Heroes.ReplayParser
                                     UpgradeEventType = UpgradeEventType.GallTalentDarkDescentUpgrade,
                                     Value = (int) trackerEvent.Data.dictionary[2].vInt.Value });
                                 break;
+
+							case "WitchDoctorPlagueofToadsPandemicTalentCompletion":
+								playerIDDictionary[(int) trackerEvent.Data.dictionary[0].vInt.Value].UpgradeEvents.Add(new UpgradeEvent {
+                                    TimeSpan = trackerEvent.TimeSpan,
+                                    UpgradeEventType = UpgradeEventType.WitchDoctorPlagueofToadsPandemicTalentCompletion,
+                                    Value = (int) trackerEvent.Data.dictionary[2].vInt.Value });
+								break;
 
                             default:
                                 // New Upgrade Event - let's log it until we can identify and properly track it
@@ -259,8 +268,11 @@ namespace Heroes.ReplayParser
                             case "RegenGlobePickedUp": break;       // {StatGameEvent: {"RegenGlobePickedUp", , [{{"PlayerID"}, 1}], }}
                             case "ChoGall Cho Spawn Error": break;  // {StatGameEvent: {"ChoGall Cho Spawn Error", , [{{"PlayerID"}, 6}], }}
                             case "ChoGall Gall Spawn Error": break; // {StatGameEvent: {"ChoGall Gall Spawn Error", , [{{"PlayerID"}, 6}], }}
+							case "LootSprayUsed": break;            // {StatGameEvent: {"LootSprayUsed", [{{"MapID"}, "CursedHollow"}, {{"PlayerHandle"}, "98-Hero-1-640036"}, {{"SprayID"}, "SprayStaticFluidDefault"}, {{"HeroID"}, "HeroWizard"}], [{{"PlayerID"}, 9}, {{"IsWheel"}, 0}], [{{"XLoc"}, 193}, {{"YLoc"}, 114}]}}
+							case "LootVoiceLineUsed": break;        // {StatGameEvent: {"LootVoiceLineUsed", [{{"MapID"}, "CursedHollow"}, {{"PlayerHandle"}, "98-Hero-1-95259"}, {{"VoiceLineID"}, "AurielBase_VoiceLine01"}, {{"HeroID"}, "HeroAuriel"}], [{{"PlayerID"}, 1}, {{"IsWheel"}, 0}], [{{"XLoc"}, 55}, {{"YLoc"}, 104}]}}
+							case "LootWheelUsed": break;            // {StatGameEvent: {"LootWheelUsed", [{{"MapID"}, "CursedHollow"}, {{"PlayerHandle"}, "98-Hero-1-16757"}, {{"WheelAction"}, "Taunt"}, {{"HeroID"}, "HeroValeera"}], [{{"PlayerID"}, 5}], [{{"XLoc"}, 143}, {{"YLoc"}, 81}]}}
 
-                            case "EndOfGameRegenMasterStacks":      // {StatGameEvent: {"EndOfGameRegenMasterStacks", [{{"Hero"}, "HeroZeratul"}], [{{"PlayerID"}, 7}, {{"Stack Count"}, 23}], }}
+							case "EndOfGameRegenMasterStacks":      // {StatGameEvent: {"EndOfGameRegenMasterStacks", [{{"Hero"}, "HeroZeratul"}], [{{"PlayerID"}, 7}, {{"Stack Count"}, 23}], }}
                                 playerIDDictionary[(int) trackerEvent.Data.dictionary[2].optionalData.array[0].dictionary[1].vInt.Value].UpgradeEvents.Add(new UpgradeEvent {
                                     TimeSpan = trackerEvent.TimeSpan,
                                     UpgradeEventType = UpgradeEventType.RegenMasterStacks,
@@ -569,6 +581,8 @@ namespace Heroes.ReplayParser
                                 case "EndOfMatchAwardMostGemsTurnedInBoolean":
                                 case "EndOfMatchAwardMostAltarDamageDone":
                                 case "EndOfMatchAwardMostNukeDamageDoneBoolean":
+								case "EndOfMatchAwardMostSkullsCollectedBoolean":
+								case "EndOfMatchAwardMostTimePushingBoolean":
 
                                 case "EndOfMatchAwardMostKillsBoolean":
                                 case "EndOfMatchAwardHatTrickBoolean":
@@ -653,8 +667,14 @@ namespace Heroes.ReplayParser
                                                 case "EndOfMatchAwardMostNukeDamageDoneBoolean":
                                                     replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostNukeDamageDone);
                                                     break;
+												case "EndOfMatchAwardMostSkullsCollectedBoolean":
+													replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostSkullsCollected);
+													break;
+												case "EndOfMatchAwardMostTimePushingBoolean":
+													replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostTimePushing);
+													break;
 
-                                                case "EndOfMatchAwardMostKillsBoolean":
+												case "EndOfMatchAwardMostKillsBoolean":
                                                     replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostKills);
                                                     break;
                                                 case "EndOfMatchAwardHatTrickBoolean":
@@ -706,10 +726,11 @@ namespace Heroes.ReplayParser
                                 case "TeamTakedowns":
                                 case "Role":
                                 case "EndOfMatchAwardGivenToNonwinner":
+								case "OnFireTimeOnFire":
 
-                                // New Stats Added in PTR 12/6/2016
-                                // Currently all 0 values - if these are filled in, let's add them to the Player.ScoreResult object
-                                case "ProtectionGivenToAllies":
+								// New Stats Added in PTR 12/6/2016
+								// Currently all 0 values - if these are filled in, let's add them to the Player.ScoreResult object
+								case "ProtectionGivenToAllies":
                                 case "TimeSilencingEnemyHeroes":
                                 case "TimeRootingEnemyHeroes":
                                 case "TimeStunningEnemyHeroes":
@@ -739,6 +760,7 @@ namespace Heroes.ReplayParser
                                 case "BlackheartDoubloonsTurnedIn":
                                 case "MinesSkullsCollected":
                                 case "NukeDamageDone":
+								case "TimeOnPayload":
 
                                 // Special Events
                                 case "LunarNewYearEventCompleted":           // Early 2016
