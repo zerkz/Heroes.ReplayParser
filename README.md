@@ -1,6 +1,6 @@
 Please visit the [source branch](https://github.com/barrett777/Heroes.ReplayParser) for information on this library.
 
-This fork is being used the in the [HeroesParserData](https://github.com/koliva8245/HeroesParserData) application. 
+This fork is being used the in the [Heroes Match Tracker](https://github.com/koliva8245/HeroesMatchTracker) application. 
 
 The difference between this fork and the source
 * Enabled chat parsing
