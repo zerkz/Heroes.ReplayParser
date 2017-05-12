@@ -22,7 +22,8 @@
             {
                 var bitReader = new BitReader(stream);
 
-                if (replay.ReplayBuild < 38793)
+                if (replay.ReplayBuild < 38793 ||
+                    replay.ReplayBuild == 52124 || replay.ReplayBuild == 52381) // non-test ptr builds
                 {
                     GetBattleTags(replay, bitReader);
                     return;
@@ -244,7 +245,12 @@
                     bitReader.ReadBytes(4); // same for all players
                     bitReader.ReadBytes(14);
 
-                    if (replay.ReplayBuild >= 52860)
+                    if (replay.ReplayBuild == 53270)
+                    {
+                        bitReader.ReadBytes(232);
+                        bitReader.Read(1);
+                    }
+                    else if (replay.ReplayBuild >= 52860)
                     {
                         bitReader.ReadBytes(228);
                         bitReader.Read(7);
