@@ -13,7 +13,7 @@ namespace ConsoleApplication1
         {
             var heroesAccountsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Heroes of the Storm\Accounts");
             //var randomReplayFileName = Directory.GetFiles(heroesAccountsFolder, "*.StormReplay", SearchOption.AllDirectories).OrderBy(i => Guid.NewGuid()).First();
-            var randomReplayFileName = @"C:\Users\koliva\Documents\Heroes of the Storm\Accounts\77558904\1-Hero-1-1527252\Replays\Multiplayer\Cursed Hollow (458).StormReplay";
+            var randomReplayFileName = @"C:\Users\koliva\Documents\Heroes of the Storm\Accounts\77558904\98-Hero-1-263640\Replays\Multiplayer\Tomb of the Spider Queen (3).StormReplay";
             // Use temp directory for MpqLib directory permissions requirements
             var tmpPath = Path.GetTempFileName();
             File.Copy(randomReplayFileName, tmpPath, overwrite: true);
