@@ -158,7 +158,7 @@
                     collectionSize = bitReader.ReadInt32();
 
                 if (collectionSize > 5000)
-                    throw new Exception("skinArrayLength is an unusually large number");
+                    throw new Exception("collectionSize is an unusually large number");
 
                 for (int i = 0; i < collectionSize; i++)
                 {
@@ -202,12 +202,10 @@
                     return;
                 }
 
-                bitReader.ReadInt32();
-                bitReader.ReadBytes(33);
+                bitReader.ReadInt32(); // m_randomSeed 
+                bitReader.ReadBytes(32);
 
-                ReadByte0x00(bitReader);
-                ReadByte0x00(bitReader);
-                bitReader.ReadByte(); // 0x19
+                bitReader.ReadInt32(); // 0x19
 
                 if (replay.ReplayBuild <= 47479 || replay.ReplayBuild == 47903)
                 {
