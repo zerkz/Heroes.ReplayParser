@@ -275,6 +275,8 @@
                     }
                     else
                     {
+                        bitReader.ReadBytes(12);
+
                         // each byte has a max value of 0x7F (127)
                         if (replay.ReplayBuild >= 48027)
                             bitReader.ReadInt16();
@@ -314,7 +316,6 @@
                         throw new Exception("Couldn't find BattleTag");
 
                     replay.ClientListByUserID[player].BattleTag = int.Parse(battleTag[1]);
-
 
                     if (replay.ReplayBuild >= 52860 || (replay.ReplayVersionMajor == 2 && replay.ReplayBuild >= 51978))
                         bitReader.ReadInt32(); // player's account level
