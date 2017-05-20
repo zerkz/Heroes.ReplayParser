@@ -22,8 +22,10 @@
             {
                 var bitReader = new BitReader(stream);
 
+                // 52124 and 52381 are non-tested ptr builds
                 if (replay.ReplayBuild < 38793 ||
-                    replay.ReplayBuild == 52124 || replay.ReplayBuild == 52381) // non-test ptr builds
+                    replay.ReplayBuild == 52124 || replay.ReplayBuild == 52381 ||
+                    replay.GameMode == GameMode.Unknown) 
                 {
                     GetBattleTags(replay, bitReader);
                     return;
