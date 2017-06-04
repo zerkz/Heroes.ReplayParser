@@ -25,7 +25,7 @@
                 // 52124 and 52381 are non-tested ptr builds
                 if (replay.ReplayBuild < 38793 ||
                     replay.ReplayBuild == 52124 || replay.ReplayBuild == 52381 ||
-                    replay.GameMode == GameMode.Unknown) 
+                    replay.GameMode == GameMode.Unknown)
                 {
                     GetBattleTags(replay, bitReader);
                     return;
@@ -182,11 +182,11 @@
                         {
                             if (num > 0)
                             {
-                                replay.ClientListByUserID[j].SkinsDictionary.Add(playerCollection[i], true);
+                                replay.ClientListByUserID[j].PlayerCollectionDictionary.Add(playerCollection[i], true);
                             }
                             else if (num == 0)
                             {
-                                replay.ClientListByUserID[j].SkinsDictionary.Add(playerCollection[i], false);
+                                replay.ClientListByUserID[j].PlayerCollectionDictionary.Add(playerCollection[i], false);
                             }
                             else
                                 throw new NotImplementedException();
@@ -308,7 +308,7 @@
                         // use this to determine who is in a party
                         // those in the same party will have the same exact 8 bytes of data
                         // the party leader is the first one (in the order of the client list)
-                        replay.ClientListByUserID[player].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32();                
+                        replay.ClientListByUserID[player].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32();
                     }
 
                     bitReader.Read(1);
@@ -320,7 +320,7 @@
                     replay.ClientListByUserID[player].BattleTag = int.Parse(battleTag[1]);
 
                     if (replay.ReplayBuild >= 52860 || (replay.ReplayVersionMajor == 2 && replay.ReplayBuild >= 51978))
-                        bitReader.ReadInt32(); // player's account level
+                        replay.ClientListByUserID[player].AccountLevel = bitReader.ReadInt32(); // player's account level, not available in custom games
 
                     bitReader.ReadBytes(27); // these similar bytes don't occur for last player
                 }
