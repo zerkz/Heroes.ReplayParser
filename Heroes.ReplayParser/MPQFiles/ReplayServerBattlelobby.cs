@@ -53,19 +53,80 @@
                     bitReader.ReadBytes(32);
                 }
 
-                // seems to be in all replays
-                bitReader.ReadInt16();
-                bitReader.stream.Position = bitReader.stream.Position + 684;
-
-                // seems to be in all replays
-                bitReader.ReadInt16();
-                bitReader.stream.Position = bitReader.stream.Position + 1944;
+                bitReader.stream.Position = bitReader.stream.Position + 2632;
 
                 if (bitReader.ReadString(8) != "HumnComp")
                     throw new Exception("Not HumnComp");
 
-                // seems to be in all replays
-                bitReader.stream.Position = bitReader.stream.Position = bitReader.stream.Position + 19859;
+                // only testing for this build and higher
+                if (replay.ReplayBuild >= 55288)
+                {
+                    bitReader.stream.Position = bitReader.stream.Position + 9547;
+                    if (bitReader.ReadString(8) != "HumnComp")
+                        throw new Exception("Not HumnComp");
+
+                    bitReader.stream.Position = bitReader.stream.Position + 10877;
+                    if (bitReader.ReadString(8) != "HumnComp")
+                        throw new Exception("Not HumnComp");
+
+                    bitReader.stream.Position = bitReader.stream.Position + 9060;
+
+                    // beginning of "draft section", not sure the exact byte where it begins though
+                    //-----------------------------------------
+                    bitReader.stream.Position = bitReader.stream.Position + 255;
+
+                    bitReader.ReadBytes(25); // hero skin selection
+                    bitReader.ReadBytes(7);
+         
+                    bitReader.ReadBytes(24);// banner selection
+
+                    bitReader.stream.Position = bitReader.stream.Position + 228;
+
+                    bitReader.ReadBytes(25); // voice-line selection
+
+                    bitReader.stream.Position = bitReader.stream.Position + 458;
+
+                    // selected heroes for loading screen (not always the same as the ingame heroes)
+                    // index on order of heroes alphabetically (auto-select is 1)
+                    bitReader.Read(2);
+                    int p1HeroBit = (int)bitReader.Read(1);
+                    int p1Hero = (int)bitReader.Read(10);
+                    int p2HeroBit = (int)bitReader.Read(1);
+                    int p2Hero = (int)bitReader.Read(10);
+                    int p3HeroBit = (int)bitReader.Read(1);
+                    int p3Hero = (int)bitReader.Read(10);
+                    int p4HeroBit = (int)bitReader.Read(1);
+                    int p4Hero = (int)bitReader.Read(10);
+                    int p5HeroBit = (int)bitReader.Read(1);
+                    int p5Hero = (int)bitReader.Read(10);
+
+                    int p6HeroBit = (int)bitReader.Read(1);
+                    int p6Hero = (int)bitReader.Read(10);
+                    int p7HeroBit = (int)bitReader.Read(1);
+                    int p7Hero = (int)bitReader.Read(10);
+                    int p8HeroBit = (int)bitReader.Read(1);
+                    int p8Hero = (int)bitReader.Read(10);
+                    int p9HeroBit = (int)bitReader.Read(1);
+                    int p9Hero = (int)bitReader.Read(10);
+                    int p10HeroBit = (int)bitReader.Read(1);
+                    int p10Hero = (int)bitReader.Read(10);
+
+                    bitReader.ReadBytes(11);
+
+                    bitReader.stream.Position = bitReader.stream.Position + 270;
+
+                    bitReader.ReadBytes(24); // spray selection
+                    bitReader.ReadBytes(49);
+                    bitReader.ReadBytes(25); // mount selection
+                    bitReader.ReadBytes(17);
+                    bitReader.ReadBytes(25); // announcer selection
+
+                    bitReader.stream.Position = bitReader.stream.Position + 239;
+                }
+                else
+                {
+                    bitReader.stream.Position = bitReader.stream.Position = bitReader.stream.Position + 19859;
+                }
 
                 // next section is language libraries?
                 // ---------------------------------------
@@ -164,7 +225,8 @@
 
                 for (int i = 0; i < collectionSize; i++)
                 {
-                    playerCollection.Add(bitReader.ReadString(bitReader.ReadByte()));
+                    var item = bitReader.ReadString(bitReader.ReadByte());
+                    playerCollection.Add(item);
                 }
 
                 // use to determine if the collection item is usable by the player (owns/free to play/internet cafe)
@@ -241,7 +303,7 @@
 
                     replay.ClientListByUserID[player].BattleNetTId = TId;
 
-                    // next 18 bytes
+                    // next 30 bytes
                     bitReader.ReadBytes(4); // same for all players
                     bitReader.ReadBytes(26);
 
