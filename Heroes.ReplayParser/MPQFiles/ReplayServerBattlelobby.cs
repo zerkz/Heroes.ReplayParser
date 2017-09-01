@@ -55,585 +55,195 @@
 
                 if (replay.ReplayBuild < 55929)
                 {
-                    // seems to be in all replays
-                    bitReader.ReadInt16();
-                    bitReader.stream.Position = bitReader.stream.Position + 684;
-
-                    // seems to be in all replays
-                    bitReader.ReadInt16();
-                    bitReader.stream.Position = bitReader.stream.Position + 1944;
+                    bitReader.stream.Position = bitReader.stream.Position + 2632;
 
                     if (bitReader.ReadString(8) != "HumnComp")
                         throw new Exception("Not HumnComp");
                 }
 
-                if (replay.ReplayBuild >= 55010)
+                CompleteParse(bitReader, replay, s2mArrayLength);
+            }
+        }
+
+        internal static void CompleteParse(BitReader bitReader, Replay replay, int s2mArrayLength)
+        {
+            bitReader.AlignToByte();
+            for (;;)
+            {
+                // we're just going to skip all the way down to the s2mh 
+                if (bitReader.ReadString(4) == "s2mh")
                 {
-                    // skip down to s2mv
-                    for (;;)
-                    {
-                        if (bitReader.ReadString(4) != "s2mv")
-                            bitReader.stream.Position = bitReader.stream.Position - 3;
-                        else
-                            break;
-                    }
-
-                    long sm2vPosition = bitReader.stream.Position - 6;
-
-                    // back up to the "beginning" of the "game selections"
-                    bitReader.stream.Position = bitReader.stream.Position - 1701;
-
-                    bitReader.stream.Position = bitReader.stream.Position + 255;
-
-                    bitReader.ReadBytes(25); // hero skin selection
-                    bitReader.ReadBytes(7);
-
-                    bitReader.ReadBytes(24); // banner selection
-
-                    //bitReader.stream.Position = bitReader.stream.Position + 228;
-                    // test
-                    bitReader.stream.Position = bitReader.stream.Position + 135;
-
-
-
-
-
-                    bitReader.ReadBytes(25); // voice-line selection
-
-                    bitReader.stream.Position = bitReader.stream.Position + 457;
-
-                    // heroes selection (not always the same as the ingame heroes)
-                    // index on order of heroes alphabetically (auto-select is 1)
-                    if (replay.ReplayBuild >= 55288)
-                        bitReader.Read(11);
-                    else if (replay.ReplayBuild >= 55010)
-                        bitReader.Read(5);
-
-                    int p1Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p2Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p3Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p4Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p5Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p6Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p7Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p8Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p9Hero = (int)bitReader.Read(10);
-                    bitReader.Read(1);
-                    int p10Hero = (int)bitReader.Read(10);
-
-                    bitReader.AlignToByte();
-                    bitReader.ReadBytes(11);
-
-                    bitReader.stream.Position = bitReader.stream.Position + 270;
-
-                    bitReader.ReadBytes(24); // spray selection
-                    bitReader.ReadBytes(49);
-                    bitReader.ReadBytes(25); // mount selection
-                    bitReader.ReadBytes(17);
-                    bitReader.ReadBytes(25); // announcer selection
-
-                    bitReader.stream.Position = bitReader.stream.Position + 238;
-
-                    // move back to beginning of s2mv section
-                    //bitReader.stream.Position = sm2vPosition;
-                    //bitReader.AlignToByte();
-
-                //// next section is language libraries?
-                //// ---------------------------------------
-                //for (int i = 0; ; i++) // no idea how to determine the count
-                //{
-                //    if (bitReader.ReadString(4).Substring(0, 2) != "s2") // s2mv; not sure if its going to be 'mv' all the time
-                //    {
-                //        bitReader.stream.Position = bitReader.stream.Position - 4;
-                //        break;
-                //    }
-
-                //    bitReader.ReadBytes(2); // 0x00 0x00
-                //    bitReader.ReadString(2); // Realm
-                //    bitReader.ReadBytes(32);
-                //}
-
-                //bitReader.Read(32);
-                //bitReader.Read(8);
-
-                //bitReader.ReadByte();
-                //for (int i = 0; ; i++) // no idea how to determine the count
-                //{
-                //    if (bitReader.ReadString(4).Substring(0, 2) != "s2") // s2ml
-                //    {
-                //        bitReader.stream.Position = bitReader.stream.Position - 4;
-                //        break;
-                //    }
-
-                //    bitReader.ReadBytes(2); // 0x00 0x00
-                //    bitReader.ReadString(2); // Realm
-                //    bitReader.ReadBytes(32);
-                //}
-
-                //for (int k = 0; k < 11; k++)
-                //{
-                //    // ruRU, zhCN, plPL, esMX, frFR, esES
-                //    // ptBR, itIT, enUs, deDe, koKR
-                //    bitReader.ReadString(4);
-
-                //    bitReader.ReadByte();
-                //    for (int i = 0; ; i++)
-                //    {
-                //        if (bitReader.ReadString(4).Substring(0, 2) != "s2") // s2ml
-                //        {
-                //            bitReader.stream.Position = bitReader.stream.Position - 4;
-                //            break;
-                //        }
-                //        bitReader.ReadString(4); // s2ml
-                //        bitReader.ReadBytes(2); // 0x00 0x00
-                //        bitReader.ReadString(2); // Realm
-                //        bitReader.ReadBytes(32);
-                //    }
-                //}
-
-                // new section, can't find a pattern
-                // has blizzmaps#1, Hero, s2mv
-                // --------------------
-                //bitReader.ReadBytes(8); // all 0x00
-
-                for (;;)
-                {
-                    // we're just going to skip all the way down to the s2mh 
-                    if (bitReader.ReadString(4) == "s2mh")
-                    {
-                        bitReader.stream.Position = bitReader.stream.Position - 4;
-                        break;
-                    }
-                    else
-                        bitReader.stream.Position = bitReader.stream.Position - 3;
+                    bitReader.stream.Position = bitReader.stream.Position - 4;
+                    break;
                 }
-
-                    for (var i = 0; i < s2mArrayLength; i++)
-                    {
-                        bitReader.ReadString(4); // s2mh
-                        bitReader.ReadBytes(2); // 0x00 0x00
-                        bitReader.ReadString(2); // Realm
-                        bitReader.ReadBytes(32);
-                    }
-                }
-                //// only testing for this build and higher
-                //if (replay.ReplayBuild >= 55288)
-                //{
-                //    bitReader.stream.Position = bitReader.stream.Position + 9547;
-                //    if (bitReader.ReadString(8) != "HumnComp")
-                //        throw new Exception("Not HumnComp");
-
-                //    bitReader.stream.Position = bitReader.stream.Position + 10877;
-                //    if (bitReader.ReadString(8) != "HumnComp")
-                //        throw new Exception("Not HumnComp");
-
-                //    bitReader.stream.Position = bitReader.stream.Position + 9060;
-
-                //    // beginning of "game selection", not sure the exact byte where it begins though
-                //    //-----------------------------------------
-                //    bitReader.stream.Position = bitReader.stream.Position + 255;
-
-                //    bitReader.ReadBytes(25); // hero skin selection
-                //    bitReader.ReadBytes(7);
-
-                //    bitReader.ReadBytes(24);// banner selection
-
-                //    bitReader.stream.Position = bitReader.stream.Position + 228;
-
-                //    bitReader.ReadBytes(25); // voice-line selection
-
-                //    //bitReader.stream.Position = bitReader.stream.Position + 458;
-                //    bitReader.stream.Position = bitReader.stream.Position + 457;
-                //    // heroes selection (not always the same as the ingame heroes)
-                //    // index on order of heroes alphabetically (auto-select is 1)
-                //    
-                //    int aa = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-
-                //    int p1Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p2Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p3Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p4Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p5Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p6Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p7Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p8Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p9Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p10Hero = (int)bitReader.Read(10);
-
-                //    bitReader.ReadBytes(11);
-
-                //    bitReader.stream.Position = bitReader.stream.Position + 270;
-
-                //    bitReader.ReadBytes(24); // spray selection
-                //    bitReader.ReadBytes(49);
-                //    bitReader.ReadBytes(25); // mount selection
-                //    bitReader.ReadBytes(17);
-                //    bitReader.ReadBytes(25); // announcer selection
-
-                //    bitReader.stream.Position = bitReader.stream.Position + 239;
-                //}
-                //else if (replay.ReplayBuild >= 55010)
-                //{
-                //    bitReader.stream.Position = bitReader.stream.Position + 28479;
-
-                //    bitReader.stream.Position = bitReader.stream.Position + 1019;
-                //    bitReader.Read(8);
-                //    int aa = (int)bitReader.Read(12);
-                //    bitReader.Read(1);
-
-                //    int p1Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p2Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p3Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p4Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p5Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p6Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p7Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p8Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p9Hero = (int)bitReader.Read(10);
-                //    bitReader.Read(1);
-                //    int p10Hero = (int)bitReader.Read(10);
-
-                //    //backup
-                //    //bitReader.stream.Position = bitReader.stream.Position + 28479;
-
-                //    //bitReader.stream.Position = bitReader.stream.Position + 1019;
-                //    //bitReader.Read(9);
-                //    //int aa = (int)bitReader.Read(12);
-                //    ////int p1HeroBit = (int)bitReader.Read(1);
-                //    //int p1Hero = (int)bitReader.Read(10);
-                //    //int p2HeroBit = (int)bitReader.Read(1);
-                //    //int p2Hero = (int)bitReader.Read(10);
-                //    //int p3HeroBit = (int)bitReader.Read(1);
-                //    //int p3Hero = (int)bitReader.Read(10);
-                //    //int p4HeroBit = (int)bitReader.Read(1);
-                //    //int p4Hero = (int)bitReader.Read(10);
-                //    //int p5HeroBit = (int)bitReader.Read(1);
-                //    //int p5Hero = (int)bitReader.Read(10);
-
-                //    //int p6HeroBit = (int)bitReader.Read(1);
-                //    //int p6Hero = (int)bitReader.Read(10);
-                //    //int p7HeroBit = (int)bitReader.Read(1);
-                //    //int p7Hero = (int)bitReader.Read(10);
-                //    //int p8HeroBit = (int)bitReader.Read(1);
-                //    //int p8Hero = (int)bitReader.Read(10);
-                //    //int p9HeroBit = (int)bitReader.Read(1);
-                //    //int p9Hero = (int)bitReader.Read(10);
-                //    //int p10HeroBit = (int)bitReader.Read(1);
-                //    //int p10Hero = (int)bitReader.Read(10);
-
-                //}
-                //else
-                //{
-                //    bitReader.stream.Position = bitReader.stream.Position + 19859;
-                //}
-
-                //// next section is language libraries?
-                //// ---------------------------------------
-                //if (replay.ReplayBuild >= 55288)
-                //{
-                //    bitReader.Read(1);
-                //    int s2mvCount = (int)bitReader.Read(7);
-
-                //    for (int i = 0; i < s2mvCount; i++)
-                //    {
-                //        if (bitReader.ReadString(4) != "s2mv")
-                //            throw new Exception("not s2mv");
-
-                //        bitReader.ReadBytes(2); // 0x00 0x00
-                //        bitReader.ReadString(2); // Realm
-                //        bitReader.ReadBytes(32);
-                //    }
-
-                //    bitReader.Read(5);
-                //    bitReader.Read(1);
-
-                //    for (int i = 0; i < s2mArrayLength; i++)
-                //    {
-                //        bitReader.ReadString(4);
-
-                //        bitReader.ReadBytes(2); // 0x00 0x00
-                //        bitReader.ReadString(2); // Realm
-                //        bitReader.ReadBytes(32);
-                //    }
-
-                //    for (int i = 0; i < 11; i++)
-                //    {
-                //        // ruRU, zhCN, plPL, esMX, frFR, esES
-                //        // ptBR, itIT, enUs, deDe, koKR
-                //        bitReader.ReadString(4);
-                //        bitReader.ReadByte(); // same as s2mArrayLength
-
-                //        bitReader.ReadString(4);
-
-                //        bitReader.ReadString(4); // s2ml
-                //        bitReader.ReadBytes(2); // 0x00 0x00
-                //        bitReader.ReadString(2); // Realm
-                //        bitReader.ReadBytes(32);
-                //    }
-                //}
-                //else
-                //{
-
-                //    bitReader.Read(8);
-                //    bitReader.Read(8);
-
-                //    for (int i = 0; ; i++) // no idea how to determine the count
-                //    {
-                //        if (bitReader.ReadString(4).Substring(0, 2) != "s2") // s2mv; not sure if its going to be 'mv' all the time
-                //        {
-                //            bitReader.stream.Position = bitReader.stream.Position - 4;
-                //            break;
-                //        }
-
-                //        bitReader.ReadBytes(2); // 0x00 0x00
-                //        bitReader.ReadString(2); // Realm
-                //        bitReader.ReadBytes(32);
-                //    }
-
-                //    bitReader.Read(32);
-                //    bitReader.Read(8);
-
-                //    bitReader.ReadByte();
-                //    for (int i = 0; ; i++) // no idea how to determine the count
-                //    {
-                //        if (bitReader.ReadString(4).Substring(0, 2) != "s2") // s2ml
-                //        {
-                //            bitReader.stream.Position = bitReader.stream.Position - 4;
-                //            break;
-                //        }
-
-                //        bitReader.ReadBytes(2); // 0x00 0x00
-                //        bitReader.ReadString(2); // Realm
-                //        bitReader.ReadBytes(32);
-                //    }
-
-                //    for (int k = 0; k < 11; k++)
-                //    {
-                //        // ruRU, zhCN, plPL, esMX, frFR, esES
-                //        // ptBR, itIT, enUs, deDe, koKR
-                //        bitReader.ReadString(4);
-
-                //        bitReader.ReadByte();
-                //        for (int i = 0; ; i++)
-                //        {
-                //            if (bitReader.ReadString(4).Substring(0, 2) != "s2") // s2ml
-                //            {
-                //                bitReader.stream.Position = bitReader.stream.Position - 4;
-                //                break;
-                //            }
-                //            bitReader.ReadString(4); // s2ml
-                //            bitReader.ReadBytes(2); // 0x00 0x00
-                //            bitReader.ReadString(2); // Realm
-                //            bitReader.ReadBytes(32);
-                //        }
-                //    }
-                //}
-
-                // new section, can't find a pattern
-                // has blizzmaps#1, Hero, s2mv
-                // --------------------
-                //bitReader.ReadBytes(8); // all 0x00
-
-                //for (;;)
-                //{
-                //    // we're just going to skip all the way down to the s2mh 
-                //    if (bitReader.ReadString(4) == "s2mh")
-                //    {
-                //        bitReader.stream.Position = bitReader.stream.Position - 4;
-                //        break;
-                //    }
-                //    else
-                //        bitReader.stream.Position = bitReader.stream.Position - 3;
-                //}
-
-                //for (var i = 0; i < s2mArrayLength; i++)
-                //{
-                //    bitReader.ReadString(4); // s2mh
-                //    bitReader.ReadBytes(2); // 0x00 0x00
-                //    bitReader.ReadString(2); // Realm
-                //    bitReader.ReadBytes(32);
-                //}
-
-                // Player collections - starting with HOTS 2.0 (live build 52860)
-                // --------------------------------------------------------------
-                List<string> playerCollection = new List<string>();
-
-                int collectionSize = 0;
-
-                if (replay.ReplayBuild >= 48027)
-                    collectionSize = bitReader.ReadInt16();
                 else
-                    collectionSize = bitReader.ReadInt32();
+                    bitReader.stream.Position = bitReader.stream.Position - 3;
+            }
 
-                if (collectionSize > 5000)
-                    throw new Exception("collectionSize is an unusually large number");
+            for (var i = 0; i < s2mArrayLength; i++)
+            {
+                bitReader.ReadString(4); // s2mh
+                bitReader.ReadBytes(2); // 0x00 0x00
+                bitReader.ReadString(2); // Realm
+                bitReader.ReadBytes(32);
+            }
 
-                for (int i = 0; i < collectionSize; i++)
+            // Player collections - starting with HOTS 2.0 (live build 52860)
+            // --------------------------------------------------------------
+            List<string> playerCollection = new List<string>();
+
+            int collectionSize = 0;
+
+            if (replay.ReplayBuild >= 48027)
+                collectionSize = bitReader.ReadInt16();
+            else
+                collectionSize = bitReader.ReadInt32();
+
+            if (collectionSize > 5000)
+                throw new Exception("collectionSize is an unusually large number");
+
+            for (int i = 0; i < collectionSize; i++)
+            {
+                if (replay.ReplayBuild >= 55929)
+                    bitReader.ReadBytes(8);
+                else
+                    playerCollection.Add(bitReader.ReadString(bitReader.ReadByte()));
+            }
+
+            // use to determine if the collection item is usable by the player (owns/free to play/internet cafe)
+            if (bitReader.ReadInt32() != collectionSize)
+                throw new Exception("skinArrayLength not equal");
+
+            for (int i = 0; i < collectionSize; i++)
+            {
+                for (int j = 0; j < 16; j++) // 16 is total player slots
                 {
-                    if (replay.ReplayBuild >= 55929)
-                        bitReader.ReadBytes(8);
-                    else
-                        playerCollection.Add(bitReader.ReadString(bitReader.ReadByte()));
-                }
+                    bitReader.ReadByte();
 
-                // use to determine if the collection item is usable by the player (owns/free to play/internet cafe)
-                if (bitReader.ReadInt32() != collectionSize)
-                    throw new Exception("skinArrayLength not equal");
+                    var num = bitReader.Read(8);
 
-                for (int i = 0; i < collectionSize; i++)
-                {
-                    for (int j = 0; j < 16; j++) // 16 is total player slots
+                    if (replay.ReplayBuild < 55929)
                     {
-                        bitReader.ReadByte();
-
-                        var num = bitReader.Read(8);
-
-                        if (replay.ReplayBuild < 55929)
+                        if (replay.ClientListByUserID[j] != null)
                         {
-                            if (replay.ClientListByUserID[j] != null)
+                            if (num > 0)
                             {
-                                if (num > 0)
-                                {
-                                    replay.ClientListByUserID[j].PlayerCollectionDictionary.Add(playerCollection[i], true);
-                                }
-                                else if (num == 0)
-                                {
-                                    replay.ClientListByUserID[j].PlayerCollectionDictionary.Add(playerCollection[i], false);
-                                }
-                                else
-                                    throw new NotImplementedException();
+                                replay.ClientListByUserID[j].PlayerCollectionDictionary.Add(playerCollection[i], true);
                             }
+                            else if (num == 0)
+                            {
+                                replay.ClientListByUserID[j].PlayerCollectionDictionary.Add(playerCollection[i], false);
+                            }
+                            else
+                                throw new NotImplementedException();
                         }
                     }
                 }
-
-                // Player info 
-                // ------------------------
-                if (replay.ReplayBuild <= 43259 || replay.ReplayBuild == 47801)
-                {
-                    // Builds that are not yet supported for detailed parsing
-                    // build 47801 is a ptr build that had new data in the battletag section, the data was changed in 47944 (patch for 47801)
-                    GetBattleTags(replay, bitReader);
-                    return;
-                }
-
-                bitReader.ReadInt32(); // m_randomSeed 
-                bitReader.ReadBytes(32);
-
-                bitReader.ReadInt32(); // 0x19
-
-                if (replay.ReplayBuild <= 47479 || replay.ReplayBuild == 47903)
-                {
-                    ExtendedBattleTagParsingOld(replay, bitReader);
-                    return;
-                }
-
-                for (int player = 0; player < replay.ClientListByUserID.Length; player++)
-                {
-                    if (replay.ClientListByUserID[player] == null)
-                        break;
-
-                    string TId;
-
-                    if (player == 0)
-                    {
-                        var offset = bitReader.ReadByte();
-                        bitReader.ReadString(2); // T:
-                        TId = bitReader.ReadString(12 + offset);
-                    }
-                    else
-                    {
-                        ReadByte0x00(bitReader);
-                        ReadByte0x00(bitReader);
-                        ReadByte0x00(bitReader);
-                        bitReader.Read(6);
-
-                        // get XXXXXXXX#YYY
-                        TId = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
-                    }
-
-                    replay.ClientListByUserID[player].BattleNetTId = TId;
-
-                    // next 30 bytes
-                    bitReader.ReadBytes(4); // same for all players
-                    bitReader.ReadBytes(26);
-
-                    // repeat of the collection section above
-                    if (replay.ReplayBuild >= 51609)
-                    {
-                        int size = (int)bitReader.Read(12); // max 4095
-                        if (size != collectionSize)
-                            throw new Exception("size and collectionSize not equal");
-
-                        int bytesSize = collectionSize / 8;
-                        int bitsSize = (collectionSize % 8) + 2; // two additional unknown bits
-
-                        bitReader.ReadBytes(bytesSize);
-                        bitReader.Read(bitsSize);
-                    }
-                    else
-                    {
-                        if (replay.ReplayBuild >= 48027)
-                            bitReader.ReadInt16();
-                        else
-                            bitReader.ReadInt32();
-
-                        // each byte has a max value of 0x7F (127)
-                        bitReader.stream.Position = bitReader.stream.Position + (collectionSize * 2);
-                        bitReader.Read(1);
-                    }
-
-                    if (bitReader.ReadBoolean())
-                    {
-                        // use this to determine who is in a party
-                        // those in the same party will have the same exact 8 bytes of data
-                        // the party leader is the first one (in the order of the client list)
-                        replay.ClientListByUserID[player].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32();
-                    }
-
-                    bitReader.Read(1);
-                    var battleTag = Encoding.UTF8.GetString(bitReader.ReadBlobPrecededWithLength(7)).Split('#'); // battleTag <name>#xxxxx
-
-                    if (battleTag.Length != 2 || battleTag[0] != replay.ClientListByUserID[player].Name)
-                        throw new Exception("Couldn't find BattleTag");
-
-                    replay.ClientListByUserID[player].BattleTag = int.Parse(battleTag[1]);
-
-                    if (replay.ReplayBuild >= 52860 || (replay.ReplayVersionMajor == 2 && replay.ReplayBuild >= 51978))
-                        replay.ClientListByUserID[player].AccountLevel = bitReader.ReadInt32(); // player's account level, not available in custom games
-
-                    bitReader.ReadBytes(27); // these similar bytes don't occur for last player
-                }
-
-                // some more data after this
             }
+
+            // Player info 
+            // ------------------------
+            if (replay.ReplayBuild <= 43259 || replay.ReplayBuild == 47801)
+            {
+                // Builds that are not yet supported for detailed parsing
+                // build 47801 is a ptr build that had new data in the battletag section, the data was changed in 47944 (patch for 47801)
+                GetBattleTags(replay, bitReader);
+                return;
+            }
+
+            if (replay.RandomValue == 0)
+                replay.RandomValue = (uint)bitReader.ReadInt32(); // m_randomSeed 
+
+            bitReader.ReadBytes(32);
+
+            bitReader.ReadInt32(); // 0x19
+
+            if (replay.ReplayBuild <= 47479 || replay.ReplayBuild == 47903)
+            {
+                ExtendedBattleTagParsingOld(replay, bitReader);
+                return;
+            }
+
+            for (int player = 0; player < replay.ClientListByUserID.Length; player++)
+            {
+                if (replay.ClientListByUserID[player] == null)
+                    break;
+
+                string TId;
+
+                if (player == 0)
+                {
+                    var offset = bitReader.ReadByte();
+                    bitReader.ReadString(2); // T:
+                    TId = bitReader.ReadString(12 + offset);
+                }
+                else
+                {
+                    ReadByte0x00(bitReader);
+                    ReadByte0x00(bitReader);
+                    ReadByte0x00(bitReader);
+                    bitReader.Read(6);
+
+                    // get XXXXXXXX#YYY
+                    TId = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
+                }
+
+                replay.ClientListByUserID[player].BattleNetTId = TId;
+
+                // next 30 bytes
+                bitReader.ReadBytes(4); // same for all players
+                bitReader.ReadBytes(26);
+
+                // repeat of the collection section above
+                if (replay.ReplayBuild >= 51609)
+                {
+                    int size = (int)bitReader.Read(12); // max 4095
+                    if (size != collectionSize)
+                        throw new Exception("size and collectionSize not equal");
+
+                    int bytesSize = collectionSize / 8;
+                    int bitsSize = (collectionSize % 8) + 2; // two additional unknown bits
+
+                    bitReader.ReadBytes(bytesSize);
+                    bitReader.Read(bitsSize);
+                }
+                else
+                {
+                    if (replay.ReplayBuild >= 48027)
+                        bitReader.ReadInt16();
+                    else
+                        bitReader.ReadInt32();
+
+                    // each byte has a max value of 0x7F (127)
+                    bitReader.stream.Position = bitReader.stream.Position + (collectionSize * 2);
+                    bitReader.Read(1);
+                }
+
+                if (bitReader.ReadBoolean())
+                {
+                    // use this to determine who is in a party
+                    // those in the same party will have the same exact 8 bytes of data
+                    // the party leader is the first one (in the order of the client list)
+                    replay.ClientListByUserID[player].PartyValue = bitReader.ReadInt32() + bitReader.ReadInt32();
+                }
+
+                bitReader.Read(1);
+                var battleTag = Encoding.UTF8.GetString(bitReader.ReadBlobPrecededWithLength(7)).Split('#'); // battleTag <name>#xxxxx
+
+                if (battleTag.Length != 2 || battleTag[0] != replay.ClientListByUserID[player].Name)
+                    throw new Exception("Couldn't find BattleTag");
+
+                replay.ClientListByUserID[player].BattleTag = int.Parse(battleTag[1]);
+
+                if (replay.ReplayBuild >= 52860 || (replay.ReplayVersionMajor == 2 && replay.ReplayBuild >= 51978))
+                    replay.ClientListByUserID[player].AccountLevel = bitReader.ReadInt32(); // player's account level, not available in custom games
+
+                bitReader.ReadBytes(27); // these similar bytes don't occur for last player
+            }
+
+            // some more data after this
         }
+
 
         // used for builds <= 47479 and 47903
         private static void ExtendedBattleTagParsingOld(Replay replay, BitReader bitReader)
@@ -910,6 +520,101 @@
             return replay;
         }
 
+        public static Replay FullPreGameParse(byte[] data)
+        {
+            Replay replay = Parse(data); // set region and players as we're guaranteed this info
+            replay.ReplayBuild = 99999; // ensure latest build
+            replay.ClientListByUserID = replay.Players;
+
+            using (var stream = new MemoryStream(data))
+            {
+                var bitReader = new BitReader(stream);
+                int s2mArrayLength = bitReader.ReadByte();
+                int stringLength = bitReader.ReadByte();
+
+                bitReader.ReadString(stringLength);
+
+                for (var i = 1; i < s2mArrayLength - 1; i++)
+                {
+                    bitReader.Read(16);
+                    bitReader.ReadString(stringLength);
+                }
+
+                // get last cache which will determine the map
+                bitReader.Read(16);
+                string[] partsOfPath = bitReader.ReadString(stringLength).Split('\\');
+                replay.MapCacheHash = partsOfPath.Last().Substring(0, partsOfPath.Last().Length - 5);
+
+                if (MapsByCacheHash.TryGetValue(replay.MapCacheHash, out string map))
+                {
+                    replay.Map = map;
+                }
+
+                if (bitReader.ReadByte() != s2mArrayLength)
+                    throw new Exception("s2mArrayLength not equal");
+
+                for (var i = 0; i < s2mArrayLength; i++)
+                {
+                    bitReader.ReadString(4); // s2m
+                    bitReader.ReadBytes(2); // 0x00 0x00
+                    bitReader.ReadString(2); // Realm
+                    bitReader.ReadBytes(32);
+                }
+
+                // skip down to s2mv
+                bitReader.AlignToByte();
+                for (;;)
+                {
+                    if (bitReader.ReadString(4) != "s2mv")
+                        bitReader.stream.Position = bitReader.stream.Position - 3;
+                    else
+                        break;
+                }
+
+                // back up to the "beginning" of the "game selections"
+                bitReader.stream.Position = bitReader.stream.Position - 1789; // first two bytes are 0x04 0x81
+                //bitReader.stream.Position = bitReader.stream.Position - 1790; // kel' ptr
+
+                bitReader.stream.Position = bitReader.stream.Position + 266;
+
+                bitReader.ReadBytes(26); // hero skin selection
+                bitReader.ReadBytes(8);
+
+                bitReader.ReadBytes(26); // banner selection
+
+                bitReader.stream.Position = bitReader.stream.Position + 241;
+
+                bitReader.ReadBytes(26); // voice-line selection
+
+                bitReader.stream.Position = bitReader.stream.Position + 479;
+
+                // index on order of heroes alphabetically (auto-select is 1)
+                bitReader.Read(7);
+                //bitReader.Read(11); // ptr kel
+                for (int i = 0; i < replay.ClientListByUserID.Length; i++)
+                {
+                    replay.ClientListByUserID[i].CharacterOrderIndex = (int)bitReader.Read(11);
+                    replay.ClientListByUserID[i].Character = HeroesList[replay.ClientListByUserID[i].CharacterOrderIndex];
+                    bitReader.Read(1);
+                }
+
+                bitReader.ReadBytes(11); // also contains the other 6 players
+
+                bitReader.stream.Position = bitReader.stream.Position + 285;
+
+                bitReader.ReadBytes(26); // spray selection
+                bitReader.ReadBytes(52);
+                bitReader.ReadBytes(26); // mount selection
+                bitReader.ReadBytes(18);
+                bitReader.ReadBytes(26); // announcer selection      
+
+                ReplayServerBattlelobby.CompleteParse(bitReader, replay, s2mArrayLength);
+            }
+
+            replay.Players = replay.ClientListByUserID;
+            return replay;
+        }
+
         public static string Base64EncodeStandaloneBattlelobby(Heroes.ReplayParser.Replay replay)
         {
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(",", replay.Players.Select(i => i.BattleNetRegionId + "#" + i.Name + "#" + i.BattleTag + "#" + i.Team))));
@@ -928,5 +633,100 @@
                 }).ToArray()
             };
         }
+
+
+        private static readonly Dictionary<string, string> MapsByCacheHash = new Dictionary<string, string>
+        {
+            { "fc7d08f1057722ab6f0e737f4d60996f975d3d4ddf7488ed52ef63f0c0170f12", "Battlefield of Eternity" },
+            { "e0cfb7dd65ddaf27127aa741ad291f7698fa8440555497349cdc60922ce287a4", "Blackheart's Bay" },
+            { "edcc11b85415653f46521fa4468b7de7997facdccec3d64790466618bb1fee43", "Braxis Holdout" },
+            { "d6ad2a7889bd72031c5a2d69b927ef5342a5c9095685bd77f97c3eb53a59b917", "Cursed Hollow" },
+            { "92e064416b072fdecdc648b1926c9bbbeb5036d78b74b5d5e65a90a43361006b", "Dragon Shire" },
+            { "fc5286bb4246b8c094dbf788b8471f198c799f0a7a95c889a02146c827927fd5", "Garden of Terror" },
+            //{ "", "Hanamura" },
+            { "24ffab4b698e7678a734a75f1de0aee1072bd641099713316de0c56255167d24", "Haunted Mines" },
+            { "a99e868a48edcd62ca659f6c6d48b4044ec18af2e243c9c8d80e9c70d27e0757", "Infernal Shrines" },
+            { "3d7e9b13340f4e1ef87bf8d9927aee79ecc26026f57069e93989448c5c20dba9", "Sky Temple" },
+            { "28f5e8356cf8a07b6ebe98308b219dd8014d0a7c4fa299c9f966e572a1400283", "Tomb of the Spider Queen" },
+            { "0102bd7920b261cf29072a56fd95f005e3a06fbf10498a9629324b434b2ed095", "Towers of Doom" },
+            { "e44c42948396feb2422b23a38404d45ddf7f53358f2b2af3ae4194bcf38ac09b", "Warhead Junction" },
+        };
+
+        private static readonly List<string> HeroesList = new List<string>()
+        {
+            { string.Empty },
+            { "AutoSelect" },
+            { "Abathur" },
+            { "Alarak" },
+            { "Anubarak" },
+            { "Artanis" },
+            { "Arthas" },
+            { "Auriel" },
+            { "Azmodan" },
+            { "Brightwing" },
+            { "Butcher" },
+            { "Cassia" },
+            { "Chen" },
+            { "Cho" },
+            { "Chromie" },
+            { "Dehaka" },
+            { "Diablo" },
+            { "DVa" },
+            { "ETC" },
+            { "Falstad" },
+            { "Gall" },
+            { "Garrosh" },
+            { "Gazlowe" },
+            { "Genji" },
+            { "Greymane" },
+            { "Guldan" },
+            { "Illidan" },
+            { "Jaina" },
+            { "Johanna" },
+            { "Kaelthas" },
+            //{ "Kelthuzad" }, // kel' ptr
+            { "Kerrigan" },
+            { "Kharazim" },
+            { "Leoric" },
+            { "LiLi" },
+            { "LiMing" },
+            { "LostVikings" },
+            { "LtMorales" },
+            { "Lucio" },
+            { "Lunara" },
+            { "Malfurion" },
+            { "Malthael" },
+            { "Medivh" },
+            { "Muradin" },
+            { "Murky" },
+            { "Nazeebo" },
+            { "Nova" },
+            { "Probius" },
+            { "Ragnaros" },
+            { "Raynor" },
+            { "Rehgar" },
+            { "Rexxar" },
+            { "Samuro" },
+            { "SgtHammer" },
+            { "Sonya" },
+            { "Stitches" },
+            { "Stukov" },
+            { "Sylvanas" },
+            { "Tassadar" },
+            { "Thrall" },
+            { "Tracer" },
+            { "Tychus" },
+            { "Tyrael" },
+            { "Tyrande" },
+            { "Uther" },
+            { "Valeera" },
+            { "Valla" },
+            { "Varian" },
+            { "Xul" },
+            { "Zagara" },
+            { "Zarya" },
+            { "Zeratul" },
+            { "Zuljin" },
+        };
     }
 }

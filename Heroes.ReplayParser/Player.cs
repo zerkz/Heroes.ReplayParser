@@ -139,6 +139,11 @@ namespace Heroes.ReplayParser
         /// Gets or sets the player's account level
         /// </summary>
         public int AccountLevel { get; set; }
+
+        /// <summary>
+        /// The index of the character
+        /// </summary>
+        public int CharacterOrderIndex { get; set; }
     }
 
     public class ScoreResult

@@ -82,6 +82,8 @@
         /// <summary> Team Hero Bans ([Team][HeroBanned]) </summary>
         public string[][] TeamHeroBans { get; set; } = new string[2][] { new string[2] { null, null }, new string[2] { null, null } };
 
+        public string MapCacheHash { get; set; }
+
         public bool IsGameEventsParsedSuccessfully { get; set; } = false;
         public bool? IsStatisticsParsedSuccessfully { get; set; } = null;
     }
