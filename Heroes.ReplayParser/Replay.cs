@@ -22,7 +22,7 @@
         /// <summary> Gets the map the game was played on. </summary>
         public string Map { get; set; }
 
-        public string MapEnglish { get; set; }
+        public string MapNameAlt { get; set; }
 
         /// <summary> Gets the size of the map the game was played on. </summary>
         public Point MapSize { get; set; }
