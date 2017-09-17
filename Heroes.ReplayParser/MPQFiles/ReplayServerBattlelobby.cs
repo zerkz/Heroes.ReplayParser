@@ -43,7 +43,7 @@
                 }
 
                 if (bitReader.ReadByte() != s2mArrayLength)
-                    throw new Exception("s2ArrayLength not equal");
+                    throw new DetailedParsedException("s2ArrayLength not equal");
 
                 for (var i = 0; i < s2mArrayLength; i++)
                 {
@@ -58,14 +58,14 @@
                     bitReader.stream.Position = bitReader.stream.Position + 2632;
 
                     if (bitReader.ReadString(8) != "HumnComp")
-                        throw new Exception("Not HumnComp");
+                        throw new DetailedParsedException("Not HumnComp");
                 }
 
-                CompleteParse(bitReader, replay, s2mArrayLength);
+                DetailedParse(bitReader, replay, s2mArrayLength);
             }
         }
 
-        internal static void CompleteParse(BitReader bitReader, Replay replay, int s2mArrayLength)
+        internal static void DetailedParse(BitReader bitReader, Replay replay, int s2mArrayLength)
         {
             bitReader.AlignToByte();
             for (;;)
@@ -100,10 +100,11 @@
                 collectionSize = bitReader.ReadInt32();
 
             if (collectionSize > 5000)
-                throw new Exception("collectionSize is an unusually large number");
+                throw new DetailedParsedException("collectionSize is an unusually large number");
 
             for (int i = 0; i < collectionSize; i++)
             {
+                // unfortunately the item strings were removed in build 55929
                 if (replay.ReplayBuild >= 55929)
                     bitReader.ReadBytes(8);
                 else
@@ -112,7 +113,7 @@
 
             // use to determine if the collection item is usable by the player (owns/free to play/internet cafe)
             if (bitReader.ReadInt32() != collectionSize)
-                throw new Exception("skinArrayLength not equal");
+                throw new DetailedParsedException("skinArrayLength not equal");
 
             for (int i = 0; i < collectionSize; i++)
             {
@@ -199,7 +200,7 @@
                 {
                     int size = (int)bitReader.Read(12); // max 4095
                     if (size != collectionSize)
-                        throw new Exception("size and collectionSize not equal");
+                        throw new DetailedParsedException("size and collectionSize not equal");
 
                     int bytesSize = collectionSize / 8;
                     int bitsSize = (collectionSize % 8) + 2; // two additional unknown bits
@@ -231,7 +232,7 @@
                 var battleTag = Encoding.UTF8.GetString(bitReader.ReadBlobPrecededWithLength(7)).Split('#'); // battleTag <name>#xxxxx
 
                 if (battleTag.Length != 2 || battleTag[0] != replay.ClientListByUserID[player].Name)
-                    throw new Exception("Couldn't find BattleTag");
+                    throw new DetailedParsedException("Couldn't find BattleTag");
 
                 replay.ClientListByUserID[player].BattleTag = int.Parse(battleTag[1]);
 
@@ -242,6 +243,7 @@
             }
 
             // some more data after this
+            // there is also a CSTM string down here, if it exists, the game is a custom game
         }
 
 
@@ -280,7 +282,7 @@
                         TId_2 = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
 
                         if (TId != TId_2)
-                            throw new Exception("TID dup not equal");
+                            throw new DetailedParsedException("TID dup not equal");
                     }
                 }
                 else
@@ -305,7 +307,7 @@
                         TId_2 = Encoding.UTF8.GetString(ReadSpecialBlob(bitReader, 8));
 
                         if (TId != TId_2)
-                            throw new Exception("TID dup not equal");
+                            throw new DetailedParsedException("TID dup not equal");
                     }
                 }
                 replay.ClientListByUserID[i].BattleNetTId = TId;
@@ -356,7 +358,7 @@
                 var battleTag = Encoding.UTF8.GetString(bitReader.ReadBlobPrecededWithLength(7)).Split('#'); // battleTag <name>#xxxxx
 
                 if (battleTag.Length != 2 || battleTag[0] != replay.ClientListByUserID[i].Name)
-                    throw new Exception("Couldn't find BattleTag");
+                    throw new DetailedParsedException("Couldn't find BattleTag");
 
                 replay.ClientListByUserID[i].BattleTag = int.Parse(battleTag[1]);
 
@@ -471,7 +473,7 @@
         private static void ReadByte0x00(BitReader bitReader)
         {
             if (bitReader.ReadByte() != 0)
-                throw new Exception("Not 0x00");
+                throw new DetailedParsedException("Not 0x00");
         }
     }
 
@@ -526,92 +528,127 @@
             replay.ReplayBuild = 99999; // ensure latest build
             replay.ClientListByUserID = replay.Players;
 
-            using (var stream = new MemoryStream(data))
+            try
             {
-                var bitReader = new BitReader(stream);
-                int s2mArrayLength = bitReader.ReadByte();
-                int stringLength = bitReader.ReadByte();
-
-                bitReader.ReadString(stringLength);
-
-                for (var i = 1; i < s2mArrayLength - 1; i++)
+                using (var stream = new MemoryStream(data))
                 {
-                    bitReader.Read(16);
+                    var bitReader = new BitReader(stream);
+                    int s2mArrayLength = bitReader.ReadByte();
+                    int stringLength = bitReader.ReadByte();
+
                     bitReader.ReadString(stringLength);
+
+                    for (var i = 1; i < s2mArrayLength - 1; i++)
+                    {
+                        bitReader.Read(16);
+                        bitReader.ReadString(stringLength);
+                    }
+
+                    // get last cache which will determine the map
+                    bitReader.Read(16);
+                    string[] partsOfPath = bitReader.ReadString(stringLength).Split('\\');
+                    replay.MapCacheHash = partsOfPath.Last().Substring(0, partsOfPath.Last().Length - 5);
+
+                    if (MapsByCacheHash.TryGetValue(replay.MapCacheHash, out string map))
+                    {
+                        replay.Map = map;
+                    }
+
+                    if (bitReader.ReadByte() != s2mArrayLength)
+                        throw new DetailedParsedException("s2mArrayLength not equal");
+
+                    for (var i = 0; i < s2mArrayLength; i++)
+                    {
+                        bitReader.ReadString(4); // s2m
+                        bitReader.ReadBytes(2); // 0x00 0x00
+                        bitReader.ReadString(2); // Realm
+                        bitReader.ReadBytes(32);
+                    }
+
+                    // skip down to s2mv
+                    bitReader.AlignToByte();
+                    for (; ; )
+                    {
+                        if (bitReader.ReadString(4) != "s2mv")
+                            bitReader.stream.Position = bitReader.stream.Position - 3;
+                        else
+                            break;
+                    }
+
+                    // back up to the "beginning" of the "game selections"
+                    bitReader.stream.Position = bitReader.stream.Position - 1790; // first two bytes are 0x04 0x81
+
+                    bitReader.stream.Position = bitReader.stream.Position + 266;
+
+                    bitReader.ReadBytes(26); // hero skin selection
+                    bitReader.ReadBytes(8);
+
+                    bitReader.ReadBytes(26); // banner selection
+
+                    bitReader.stream.Position = bitReader.stream.Position + 241;
+
+                    bitReader.ReadBytes(26); // voice-line selection
+
+                    bitReader.stream.Position = bitReader.stream.Position + 479;
+
+                    // index on order of heroes alphabetically (auto-select is 1)
+                    bitReader.Read(11);
+
+                    bool invalid = false;
+
+                    foreach (var client in replay.ClientListByUserID)
+                    {
+                        int index = (int)bitReader.Read(11);
+                        if (index > 0 || index < HeroesList.Count)
+                        {
+                            client.CharacterOrderIndex = index;
+                            client.Character = HeroesList[index];
+                            bitReader.Read(1);
+                        }
+                        else
+                        {
+                            invalid = true;
+                            break;
+                        }
+                    }
+
+                    if (!invalid)
+                    {
+                        int duplicates = replay.ClientListByUserID.GroupBy(x => x.CharacterOrderIndex)
+                                                                  .Where(x => x.Count() > 2) // qm games can have two of the same hero
+                                                                  .Select(x => x.Key)
+                                                                  .ToList().Count;
+                        if (duplicates > 0)
+                            invalid = true;
+                    }
+                    if (invalid)
+                    {
+                        // clear it all
+                        foreach (var client in replay.ClientListByUserID)
+                        {
+                            client.CharacterOrderIndex = 0;
+                            client.Character = null;
+                        }
+                    }
+
+                    bitReader.ReadBytes(11); // also contains the other 6 players
+
+                    bitReader.stream.Position = bitReader.stream.Position + 285;
+
+                    bitReader.ReadBytes(26); // spray selection
+                    bitReader.ReadBytes(52);
+                    bitReader.ReadBytes(26); // mount selection
+                    bitReader.ReadBytes(18);
+                    bitReader.ReadBytes(26); // announcer selection      
+
+                    ReplayServerBattlelobby.DetailedParse(bitReader, replay, s2mArrayLength);
                 }
-
-                // get last cache which will determine the map
-                bitReader.Read(16);
-                string[] partsOfPath = bitReader.ReadString(stringLength).Split('\\');
-                replay.MapCacheHash = partsOfPath.Last().Substring(0, partsOfPath.Last().Length - 5);
-
-                if (MapsByCacheHash.TryGetValue(replay.MapCacheHash, out string map))
-                {
-                    replay.Map = map;
-                }
-
-                if (bitReader.ReadByte() != s2mArrayLength)
-                    throw new Exception("s2mArrayLength not equal");
-
-                for (var i = 0; i < s2mArrayLength; i++)
-                {
-                    bitReader.ReadString(4); // s2m
-                    bitReader.ReadBytes(2); // 0x00 0x00
-                    bitReader.ReadString(2); // Realm
-                    bitReader.ReadBytes(32);
-                }
-
-                // skip down to s2mv
-                bitReader.AlignToByte();
-                for (;;)
-                {
-                    if (bitReader.ReadString(4) != "s2mv")
-                        bitReader.stream.Position = bitReader.stream.Position - 3;
-                    else
-                        break;
-                }
-
-                // back up to the "beginning" of the "game selections"
-                bitReader.stream.Position = bitReader.stream.Position - 1789; // first two bytes are 0x04 0x81
-                //bitReader.stream.Position = bitReader.stream.Position - 1790; // kel' ptr
-
-                bitReader.stream.Position = bitReader.stream.Position + 266;
-
-                bitReader.ReadBytes(26); // hero skin selection
-                bitReader.ReadBytes(8);
-
-                bitReader.ReadBytes(26); // banner selection
-
-                bitReader.stream.Position = bitReader.stream.Position + 241;
-
-                bitReader.ReadBytes(26); // voice-line selection
-
-                bitReader.stream.Position = bitReader.stream.Position + 479;
-
-                // index on order of heroes alphabetically (auto-select is 1)
-                bitReader.Read(7);
-                //bitReader.Read(11); // ptr kel
-                for (int i = 0; i < replay.ClientListByUserID.Length; i++)
-                {
-                    replay.ClientListByUserID[i].CharacterOrderIndex = (int)bitReader.Read(11);
-                    replay.ClientListByUserID[i].Character = HeroesList[replay.ClientListByUserID[i].CharacterOrderIndex];
-                    bitReader.Read(1);
-                }
-
-                bitReader.ReadBytes(11); // also contains the other 6 players
-
-                bitReader.stream.Position = bitReader.stream.Position + 285;
-
-                bitReader.ReadBytes(26); // spray selection
-                bitReader.ReadBytes(52);
-                bitReader.ReadBytes(26); // mount selection
-                bitReader.ReadBytes(18);
-                bitReader.ReadBytes(26); // announcer selection      
-
-                ReplayServerBattlelobby.CompleteParse(bitReader, replay, s2mArrayLength);
+            }
+            finally
+            {
+                replay.Players = replay.ClientListByUserID;
             }
 
-            replay.Players = replay.ClientListByUserID;
             return replay;
         }
 
@@ -684,7 +721,7 @@
             { "Jaina" },
             { "Johanna" },
             { "Kaelthas" },
-            //{ "Kelthuzad" }, // kel' ptr
+            { "KelThuzad" },
             { "Kerrigan" },
             { "Kharazim" },
             { "Leoric" },
@@ -704,7 +741,7 @@
             { "Probius" },
             { "Ragnaros" },
             { "Raynor" },
-            { "Rehgar" },
+            { "Rehgar" }, 
             { "Rexxar" },
             { "Samuro" },
             { "SgtHammer" },
@@ -728,5 +765,13 @@
             { "Zeratul" },
             { "Zuljin" },
         };
+    }
+
+    public class DetailedParsedException : Exception
+    {
+        public DetailedParsedException(string message)
+            : base(message)
+        {
+        }
     }
 }
