@@ -215,8 +215,8 @@ namespace Heroes.ReplayParser
 
                             case "EndOfGameTalentChoices": // {StatGameEvent: {"EndOfGameTalentChoices", [{{"Hero"}, "HeroAbathur"}, {{"Win/Loss"}, "Win"}, {{"Map"}, "HauntedWoods"}, {{"Tier 1 Choice"}, "AbathurMasteryRegenerativeMicrobes"}, {{"Tier 2 Choice"}, "AbathurSymbioteCarapaceSustainedCarapace"}, {{"Tier 3 Choice"}, "AbathurMasteryNeedlespine"}, {{"Tier 4 Choice"}, "AbathurHeroicAbilityUltimateEvolution"}, {{"Tier 5 Choice"}, "AbathurSymbioteSpikeBurstSomaTransference"}, {{"Tier 6 Choice"}, "AbathurVolatileMutation"}, {{"Tier 7 Choice"}, "AbathurMasteryLocustMaster"}], [{{"PlayerID"}, 1}, {{"Level"}, 24}], }}
                                 // trackerEvent.Data.dictionary[1].optionalData.array[0].dictionary[1].blobText; // hero unit name
-                                if (string.IsNullOrEmpty(replay.MapNameAlt))
-                                    replay.MapNameAlt = trackerEvent.Data.dictionary[1].optionalData.array[2].dictionary[1].blobText; // map name
+                                if (string.IsNullOrEmpty(replay.MapShortName))
+                                    replay.MapShortName = trackerEvent.Data.dictionary[1].optionalData.array[2].dictionary[1].blobText; // map name
 
                                 break;
 
