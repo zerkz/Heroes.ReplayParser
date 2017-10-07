@@ -13,7 +13,7 @@ namespace Heroes.ReplayParser
             
             for (var i = 0; i < replay.TeamLevels.Length; i++)
             {
-                replay.TeamLevels[i] = new Dictionary<int, TimeSpan>();
+                replay.TeamLevels[i] = new Dictionary<int, TimeSpan?>();
                 replay.TeamPeriodicXPBreakdown[i] = new List<PeriodicXPBreakdown>();
             }
 
@@ -214,6 +214,10 @@ namespace Heroes.ReplayParser
                                 break;
 
                             case "EndOfGameTalentChoices": // {StatGameEvent: {"EndOfGameTalentChoices", [{{"Hero"}, "HeroAbathur"}, {{"Win/Loss"}, "Win"}, {{"Map"}, "HauntedWoods"}, {{"Tier 1 Choice"}, "AbathurMasteryRegenerativeMicrobes"}, {{"Tier 2 Choice"}, "AbathurSymbioteCarapaceSustainedCarapace"}, {{"Tier 3 Choice"}, "AbathurMasteryNeedlespine"}, {{"Tier 4 Choice"}, "AbathurHeroicAbilityUltimateEvolution"}, {{"Tier 5 Choice"}, "AbathurSymbioteSpikeBurstSomaTransference"}, {{"Tier 6 Choice"}, "AbathurVolatileMutation"}, {{"Tier 7 Choice"}, "AbathurMasteryLocustMaster"}], [{{"PlayerID"}, 1}, {{"Level"}, 24}], }}
+                                // trackerEvent.Data.dictionary[1].optionalData.array[0].dictionary[1].blobText; // hero unit name
+                                if (string.IsNullOrEmpty(replay.MapAlternativeName))
+                                    replay.MapAlternativeName = trackerEvent.Data.dictionary[1].optionalData.array[2].dictionary[1].blobText; // map name
+
                                 break;
 
                             case "TalentChosen": // {StatGameEvent: {"TalentChosen", [{{"PurchaseName"}, "NovaCombatStyleAdvancedCloaking"}], [{{"PlayerID"}, 6}], }}
@@ -228,12 +232,12 @@ namespace Heroes.ReplayParser
 
                                     if (playerIDDictionary[playerID].Talents.Length > playerIDTalentIndexDictionary[playerID])
                                         playerIDDictionary[playerID].Talents[playerIDTalentIndexDictionary[playerID]++].TalentName = trackerEvent.Data.dictionary[1].optionalData.array[0].dictionary[1].blobText;
-                                    else
-                                        // A talent was selected while a player was disconnected
-                                        // This makes it more difficult to match a 'TalentName' with a 'TalentID'
-                                        // Since this is rare, I'll just clear all 'TalentName' for that player
-                                        foreach (var talent in playerIDDictionary[playerID].Talents)
-                                            talent.TalentName = null;
+                                    //else
+                                    //    // A talent was selected while a player was disconnected
+                                    //    // This makes it more difficult to match a 'TalentName' with a 'TalentID'
+                                    //    // Since this is rare, I'll just clear all 'TalentName' for that player
+                                    //    foreach (var talent in playerIDDictionary[playerID].Talents)
+                                    //        talent.TalentName = null;
                                 }
                                 break;
 

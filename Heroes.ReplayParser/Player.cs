@@ -180,9 +180,9 @@ namespace Heroes.ReplayParser
 
     public class Talent
     {
-        public int TalentID { get; set; }
+        public int? TalentID { get; set; }
         public string TalentName { get; set; } = null;
-        public TimeSpan TimeSpanSelected { get; set; }
+        public TimeSpan? TimeSpanSelected { get; set; }
     }
 
     public class UpgradeEvent

@@ -1,19 +1,18 @@
-﻿using System.IO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Foole.Mpq;
 using Heroes.ReplayParser;
-using Foole.Mpq;
+using System;
+using System.IO;
+using System.Linq;
 
-namespace ConsoleApplication1
+namespace ParserConsole
 {
     class Program
     {
         static void Main(string[] args)
         {
             var heroesAccountsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Heroes of the Storm\Accounts");
-            var randomReplayFileName = Directory.GetFiles(heroesAccountsFolder, "*.StormReplay", SearchOption.AllDirectories).OrderBy(i => Guid.NewGuid()).First();
-
+            //var randomReplayFileName = Directory.GetFiles(heroesAccountsFolder, "*.StormReplay", SearchOption.AllDirectories).OrderBy(i => Guid.NewGuid()).First();
+            var randomReplayFileName = @"C:\Users\koliva\Documents\Heroes of the Storm\Accounts\77558904\1-Hero-1-1527252\Replays\Multiplayer\Infernal Shrines (526).StormReplay";
             // Use temp directory for MpqLib directory permissions requirements
             var tmpPath = Path.GetTempFileName();
             File.Copy(randomReplayFileName, tmpPath, overwrite: true);
@@ -22,7 +21,7 @@ namespace ConsoleApplication1
             {
                 // Attempt to parse the replay
                 // Ignore errors can be set to true if you want to attempt to parse currently unsupported replays, such as 'VS AI' or 'PTR Region' replays
-                var replayParseResult = DataParser.ParseReplay(tmpPath, ignoreErrors: false, deleteFile: false);
+                var replayParseResult = DataParser.ParseReplay(tmpPath, ignoreErrors: false, deleteFile: false, detailedBattleLobbyParsing: true);
 
                 // If successful, the Replay object now has all currently available information
                 if (replayParseResult.Item1 == DataParser.ReplayParseResult.Success)

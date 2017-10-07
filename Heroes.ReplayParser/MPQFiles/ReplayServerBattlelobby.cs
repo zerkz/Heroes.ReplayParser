@@ -148,6 +148,7 @@
                 }
 
                 // Player collections - starting with HOTS 2.0 (live build 52860)
+                // strings gone starting with build (ptr) 55929
                 // --------------------------------------------------------------
                 List<string> playerCollection = new List<string>();
 
@@ -164,7 +165,7 @@
                 for (int i = 0; i < collectionSize; i++)
                 {
                     if (replay.ReplayBuild >= 55929)
-                        bitReader.ReadBytes(8);
+                        bitReader.ReadBytes(8); // most likey an identifier for the item; first six bytes are 0x00
                     else
                         playerCollection.Add(bitReader.ReadString(bitReader.ReadByte()));
                 }

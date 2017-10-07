@@ -5,6 +5,11 @@
 
     public class Replay
     {
+        /// <summary>
+        /// Latest build supported by the parser
+        /// </summary>
+        public static int LatestSupportedBuild => 56175;
+
         /// <summary> Gets a list of all messages which took place during the game. </summary>
         public List<Message> Messages { get; set; } = new List<Message>();
 
@@ -16,6 +21,11 @@
 
         /// <summary> Gets the map the game was played on. </summary>
         public string Map { get; set; }
+
+        /// <summary>
+        /// Gets the alternative name of the map
+        /// </summary>
+        public string MapAlternativeName { get; set; }
 
         /// <summary> Gets the size of the map the game was played on. </summary>
         public Point MapSize { get; set; }
@@ -66,7 +76,7 @@
         public uint RandomValue { get; set; }
 
         /// <summary> Team Levels ([Team][Level] = TimeSpan) </summary>
-        public Dictionary<int, TimeSpan>[] TeamLevels { get; set; } = new Dictionary<int, TimeSpan>[2];
+        public Dictionary<int, TimeSpan?>[] TeamLevels { get; set; } = new Dictionary<int, TimeSpan?>[2];
 
         /// <summary> Periodic XP Breakdown ([Team][PeriodicXPBreakdown]) </summary>
         public List<PeriodicXPBreakdown>[] TeamPeriodicXPBreakdown { get; set; } = new List<PeriodicXPBreakdown>[2];
@@ -145,19 +155,20 @@
         FrozenShrine = 3
     }
 
+    [Flags]
     public enum GameMode
     {
-        Unknown = -9,
-        Event = -2,
-        Custom = -1,
-        TryMe = 0,
-        Practice = 1,
-        Cooperative = 2,
-        QuickMatch = 3,
-        HeroLeague = 4,
-        TeamLeague = 5,
-        UnrankedDraft = 6,
-        Brawl = 7
+        Unknown = 0,
+        Event = 1 << 0,
+        Custom = 1 << 1,
+        TryMe = 1 << 2,
+        Practice = 1 << 3,
+        Cooperative = 1 << 4,
+        QuickMatch = 1 << 5,
+        HeroLeague = 1 << 6,
+        TeamLeague = 1 << 7,
+        UnrankedDraft = 1 << 8,
+        Brawl = 1 << 9
     }
 
     public enum GameSpeed
