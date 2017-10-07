@@ -31,12 +31,6 @@
 //
 using System;
 using System.IO;
-#if WITH_ZLIB
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
-#endif
-#if WITH_BZIP
-using ICSharpCode.SharpZipLib.BZip2;
-#endif
 
 namespace Foole.Mpq
 {
@@ -353,7 +347,7 @@ namespace Foole.Mpq
                     return MpqHuffman.Decompress(sinput).ToArray();
                 case 2: // ZLib/Deflate
 #if WITH_ZLIB
-                    return ZlibDecompress(sinput, outputLength);
+                    throw new MpqParserException("ZLib compression is not supported");
 #endif
                 case 8: // PKLib/Impode
                     return PKDecompress(sinput, outputLength);
@@ -401,9 +395,15 @@ namespace Foole.Mpq
 #if WITH_BZIP
         private static byte[] BZip2Decompress(Stream data, int expectedLength)
         {
-            MemoryStream output = new MemoryStream(expectedLength);
-            BZip2.Decompress(data, output, true);
-            return output.ToArray();
+            using (MemoryStream output = new MemoryStream(expectedLength))
+            {
+                using (var stream = new SharpCompress.Compressors.BZip2.BZip2Stream(data, SharpCompress.Compressors.CompressionMode.Decompress))
+                {
+                    stream.CopyTo(output);
+                }
+
+                return output.ToArray();
+            }
         }
 #endif
 
@@ -412,23 +412,5 @@ namespace Foole.Mpq
             PKLibDecompress pk = new PKLibDecompress(data);
             return pk.Explode(expectedLength);
         }
-
-#if WITH_ZLIB
-        private static byte[] ZlibDecompress(Stream data, int expectedLength)
-        {
-            // This assumes that Zlib won't be used in combination with another compression type
-            byte[] Output = new byte[expectedLength];
-            Stream s = new InflaterInputStream(data);
-            int Offset = 0;
-            while (expectedLength > 0)
-            {
-                int size = s.Read(Output, Offset, expectedLength);
-                if (size == 0) break;
-                Offset += size;
-                expectedLength -= size;
-            }
-            return Output;
-        }
-#endif
     }
 }
