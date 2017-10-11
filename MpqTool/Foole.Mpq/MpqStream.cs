@@ -1,6 +1,3 @@
-#define WITH_ZLIB
-#define WITH_BZIP
-
 //
 // MpqHuffman.cs
 //
@@ -31,6 +28,7 @@
 //
 using System;
 using System.IO;
+using System.IO.Compression;
 
 namespace Foole.Mpq
 {
@@ -346,15 +344,11 @@ namespace Foole.Mpq
                 case 1: // Huffman
                     return MpqHuffman.Decompress(sinput).ToArray();
                 case 2: // ZLib/Deflate
-#if WITH_ZLIB
-                    throw new MpqParserException("ZLib compression is not supported");
-#endif
+                    return ZlibDecompress(sinput, outputLength);
                 case 8: // PKLib/Impode
                     return PKDecompress(sinput, outputLength);
                 case 0x10: // BZip2
-#if WITH_BZIP
                     return BZip2Decompress(sinput, outputLength);
-#endif
                 case 0x80: // IMA ADPCM Stereo
                     return MpqWavCompression.Decompress(sinput, 2);
                 case 0x40: // IMA ADPCM Mono
@@ -392,12 +386,11 @@ namespace Foole.Mpq
             }
         }
 
-#if WITH_BZIP
         private static byte[] BZip2Decompress(Stream data, int expectedLength)
         {
             using (MemoryStream output = new MemoryStream(expectedLength))
             {
-                using (var stream = new SharpCompress.Compressors.BZip2.BZip2Stream(data, SharpCompress.Compressors.CompressionMode.Decompress))
+                using (var stream = new Ionic.BZip2.BZip2InputStream(data))
                 {
                     stream.CopyTo(output);
                 }
@@ -405,7 +398,20 @@ namespace Foole.Mpq
                 return output.ToArray();
             }
         }
-#endif
+
+        private static byte[] ZlibDecompress(Stream data, int expectedLength)
+        {
+            using (MemoryStream output = new MemoryStream(expectedLength))
+            {
+                using (var stream = new Ionic.Zlib.ZlibStream(data, Ionic.Zlib.CompressionMode.Decompress))
+                {
+                    stream.CopyTo(output);
+                }
+
+                return output.ToArray();
+
+            }
+        }
 
         private static byte[] PKDecompress(Stream data, int expectedLength)
         {
