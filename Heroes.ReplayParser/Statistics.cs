@@ -148,7 +148,13 @@ namespace Heroes.ReplayParser
                             case "VehicleDragonUpgrade":
                                 break;
 
-                            case "NovaSnipeMasterDamageUpgrade":
+							case "VolskayaVehicleUpgrade":
+							case "VolskayaVehicleGunnerUpgrade":
+								// FYI: Something is unusual with the PlayerID provided with this event
+								// I'm not sure what it is pointing to
+								break;
+
+							case "NovaSnipeMasterDamageUpgrade":
                                 playerIDDictionary[(int) trackerEvent.Data.dictionary[0].vInt.Value].UpgradeEvents.Add(new UpgradeEvent {
                                     TimeSpan = trackerEvent.TimeSpan,
                                     UpgradeEventType = UpgradeEventType.NovaSnipeMasterDamageUpgrade,
@@ -208,6 +214,10 @@ namespace Heroes.ReplayParser
                                 break;
 
                             case "EndOfGameTalentChoices": // {StatGameEvent: {"EndOfGameTalentChoices", [{{"Hero"}, "HeroAbathur"}, {{"Win/Loss"}, "Win"}, {{"Map"}, "HauntedWoods"}, {{"Tier 1 Choice"}, "AbathurMasteryRegenerativeMicrobes"}, {{"Tier 2 Choice"}, "AbathurSymbioteCarapaceSustainedCarapace"}, {{"Tier 3 Choice"}, "AbathurMasteryNeedlespine"}, {{"Tier 4 Choice"}, "AbathurHeroicAbilityUltimateEvolution"}, {{"Tier 5 Choice"}, "AbathurSymbioteSpikeBurstSomaTransference"}, {{"Tier 6 Choice"}, "AbathurVolatileMutation"}, {{"Tier 7 Choice"}, "AbathurMasteryLocustMaster"}], [{{"PlayerID"}, 1}, {{"Level"}, 24}], }}
+                                // trackerEvent.Data.dictionary[1].optionalData.array[0].dictionary[1].blobText; // hero unit name
+                                if (string.IsNullOrEmpty(replay.MapAlternativeName))
+                                    replay.MapAlternativeName = trackerEvent.Data.dictionary[1].optionalData.array[2].dictionary[1].blobText; // map name
+
                                 break;
 
                             case "TalentChosen": // {StatGameEvent: {"TalentChosen", [{{"PurchaseName"}, "NovaCombatStyleAdvancedCloaking"}], [{{"PlayerID"}, 6}], }}
@@ -735,6 +745,7 @@ namespace Heroes.ReplayParser
                                 case "Role":
                                 case "EndOfMatchAwardGivenToNonwinner":
 								case "OnFireTimeOnFire":
+								case "TouchByBlightPlague":
 
 								// New Stats Added in PTR 12/6/2016
 								// Currently all 0 values - if these are filled in, let's add them to the Player.ScoreResult object
@@ -777,9 +788,10 @@ namespace Heroes.ReplayParser
                                 case "KilledTreasureGoblin":
                                 case "StarcraftDailyEventCompleted":
                                 case "StarcraftPiecesCollected":
+								case "PachimariMania":
 
-                                // Talent Selections
-                                case "Tier1Talent":
+								// Talent Selections
+								case "Tier1Talent":
                                 case "Tier2Talent":
                                 case "Tier3Talent":
                                 case "Tier4Talent":
@@ -791,15 +803,18 @@ namespace Heroes.ReplayParser
                                 case "TeamWinsDiablo":
                                 case "TeamWinsStarCraft":
                                 case "TeamWinsWarcraft":
-                                case "WinsStarCraft":
+								case "TeamWinsOverwatch":
+								case "WinsStarCraft":
                                 case "WinsDiablo":
                                 case "WinsWarcraft":
-                                case "PlaysStarCraft":
+								case "WinsOverwatch":
+								case "PlaysStarCraft":
                                 case "PlaysDiablo":
                                 case "PlaysWarCraft":
+								case "PlaysOverwatch":
 
-                                // Gender Booleans
-                                case "TeamWinsFemale":
+								// Gender Booleans
+								case "TeamWinsFemale":
                                 case "TeamWinsMale":
                                 case "WinsMale":
                                 case "WinsFemale":

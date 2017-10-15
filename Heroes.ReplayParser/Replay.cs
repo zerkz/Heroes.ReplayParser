@@ -8,7 +8,7 @@
         /// <summary>
         /// Latest build supported by the parser
         /// </summary>
-        public static int LatestSupportedBuild => 54339;
+        public static int LatestSupportedBuild => 58209;
 
         /// <summary> Gets a list of all messages which took place during the game. </summary>
         public List<Message> Messages { get; set; } = new List<Message>();
@@ -21,6 +21,11 @@
 
         /// <summary> Gets the map the game was played on. </summary>
         public string Map { get; set; }
+
+        /// <summary>
+        /// Gets the alternative name of the map
+        /// </summary>
+        public string MapAlternativeName { get; set; }
 
         /// <summary> Gets the size of the map the game was played on. </summary>
         public Point MapSize { get; set; }

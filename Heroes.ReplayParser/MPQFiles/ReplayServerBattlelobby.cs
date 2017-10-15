@@ -88,9 +88,10 @@
                 bitReader.ReadBytes(32);
             }
 
-            // Player collections - starting with HOTS 2.0 (live build 52860)
-            // --------------------------------------------------------------
-            List<string> playerCollection = new List<string>();
+                // Player collections - starting with HOTS 2.0 (live build 52860)
+                // strings gone starting with build (ptr) 55929
+                // --------------------------------------------------------------
+                List<string> playerCollection = new List<string>();
 
             int collectionSize = 0;
 
@@ -102,14 +103,13 @@
             if (collectionSize > 5000)
                 throw new DetailedParsedException("collectionSize is an unusually large number");
 
-            for (int i = 0; i < collectionSize; i++)
-            {
-                // unfortunately the item strings were removed in build 55929
-                if (replay.ReplayBuild >= 55929)
-                    bitReader.ReadBytes(8);
-                else
-                    playerCollection.Add(bitReader.ReadString(bitReader.ReadByte()));
-            }
+                for (int i = 0; i < collectionSize; i++)
+                {
+                    if (replay.ReplayBuild >= 55929)
+                        bitReader.ReadBytes(8); // most likey an identifier for the item; first six bytes are 0x00
+                    else
+                        playerCollection.Add(bitReader.ReadString(bitReader.ReadByte()));
+                }
 
             // use to determine if the collection item is usable by the player (owns/free to play/internet cafe)
             if (bitReader.ReadInt32() != collectionSize)
