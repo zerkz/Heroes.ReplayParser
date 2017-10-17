@@ -14,7 +14,7 @@ namespace ParserConsole
             //var randomReplayFileName = Directory.GetFiles(heroesAccountsFolder, "*.StormReplay", SearchOption.AllDirectories).OrderBy(i => Guid.NewGuid()).First();
             //var randomReplayFileName = @"C:\Users\koliva\Documents\Heroes of the Storm\Accounts\77558904\1-Hero-1-1527252\Replays\Multiplayer\Blackheart's Bay (446).StormReplay";
             //var randomReplayFileName = @"C:\Users\koliva\Desktop\hex\_August2017\qm\replay.server_totsq1.battlelobby";
-            var randomReplayFileName = @"C:\Users\koliva\Desktop\hex\_september2017\replay.server_bhb.battlelobby";
+            var randomReplayFileName = @"C:\Users\koliva\Desktop\hex\_junkrat_ptr\replay.server.battlelobby";
             // Use temp directory for MpqLib directory permissions requirements
             var tmpPath = Path.GetTempFileName();
             File.Copy(randomReplayFileName, tmpPath, overwrite: true);
@@ -23,7 +23,7 @@ namespace ParserConsole
             {
                 // Attempt to parse the replay
                 // Ignore errors can be set to true if you want to attempt to parse currently unsupported replays, such as 'VS AI' or 'PTR Region' replays
-                //var replayParseResult = DataParser.ParseReplay(tmpPath, ignoreErrors: false, deleteFile: false);
+                //var replayParseResult = DataParser.ParseReplay(tmpPath, ignoreErrors: false, deleteFile: false, allowPTRRegion: true, detailedBattleLobbyParsing: true);
                 var replay = StandaloneBattleLobbyParser.FullPreGameParse(File.ReadAllBytes(tmpPath));
 
                 // If successful, the Replay object now has all currently available information

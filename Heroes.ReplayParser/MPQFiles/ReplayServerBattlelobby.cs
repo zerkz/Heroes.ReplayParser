@@ -576,9 +576,9 @@
                     }
 
                     // back up to the "beginning" of the "game selections"
-                    bitReader.stream.Position = bitReader.stream.Position - 1790; // first two bytes are 0x04 0x81
+                    bitReader.stream.Position = bitReader.stream.Position - 1790;
 
-                    bitReader.stream.Position = bitReader.stream.Position + 266;
+                    bitReader.stream.Position = bitReader.stream.Position + 267; // 266
 
                     bitReader.ReadBytes(26); // hero skin selection
                     bitReader.ReadBytes(8);
@@ -589,17 +589,17 @@
 
                     bitReader.ReadBytes(26); // voice-line selection
 
-                    bitReader.stream.Position = bitReader.stream.Position + 479;
+                    bitReader.stream.Position = bitReader.stream.Position + 480; // 479
 
                     // index on order of heroes alphabetically (auto-select is 1)
-                    bitReader.Read(11);
+                    bitReader.Read(2); // 11
 
                     bool invalid = false;
 
                     foreach (var client in replay.ClientListByUserID)
                     {
                         int index = (int)bitReader.Read(11);
-                        if (index > 0 || index < HeroesList.Count)
+                        if (index > 0 && index < HeroesList.Count)
                         {
                             client.CharacterOrderIndex = index;
                             client.Character = HeroesList[index];
@@ -652,7 +652,7 @@
             return replay;
         }
 
-        public static string Base64EncodeStandaloneBattlelobby(Heroes.ReplayParser.Replay replay)
+        public static string Base64EncodeStandaloneBattlelobby(Replay replay)
         {
             return Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(",", replay.Players.Select(i => i.BattleNetRegionId + "#" + i.Name + "#" + i.BattleTag + "#" + i.Team))));
         }
@@ -695,6 +695,7 @@
             { "AutoSelect" },
             { "Abathur" },
             { "Alarak" },
+            { "Ana" },
             { "Anubarak" },
             { "Artanis" },
             { "Arthas" },
@@ -720,6 +721,7 @@
             { "Illidan" },
             { "Jaina" },
             { "Johanna" },
+            { "Junkrat" },
             { "Kaelthas" },
             { "KelThuzad" },
             { "Kerrigan" },
