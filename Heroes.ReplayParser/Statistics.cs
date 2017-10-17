@@ -601,8 +601,9 @@ namespace Heroes.ReplayParser
                                 case "EndOfMatchAwardMostNukeDamageDoneBoolean":
 								case "EndOfMatchAwardMostSkullsCollectedBoolean":
 								case "EndOfMatchAwardMostTimePushingBoolean":
+								case "EndOfMatchAwardMostTimeOnPointBoolean":
 
-                                case "EndOfMatchAwardMostKillsBoolean":
+								case "EndOfMatchAwardMostKillsBoolean":
                                 case "EndOfMatchAwardHatTrickBoolean":
                                 case "EndOfMatchAwardClutchHealerBoolean":
                                 case "EndOfMatchAwardMostProtectionBoolean":
@@ -690,6 +691,9 @@ namespace Heroes.ReplayParser
 													break;
 												case "EndOfMatchAwardMostTimePushingBoolean":
 													replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostTimePushing);
+													break;
+												case "EndOfMatchAwardMostTimeOnPointBoolean":
+													replay.ClientListByWorkingSetSlotID[i].ScoreResult.MatchAwards.Add(MatchAwardType.MostTimeOnPoint);
 													break;
 
 												case "EndOfMatchAwardMostKillsBoolean":
@@ -780,9 +784,10 @@ namespace Heroes.ReplayParser
                                 case "MinesSkullsCollected":
                                 case "NukeDamageDone":
 								case "TimeOnPayload":
+								case "TimeOnPoint":
 
-                                // Special Events
-                                case "LunarNewYearEventCompleted":           // Early 2016
+								// Special Events
+								case "LunarNewYearEventCompleted":           // Early 2016
                                 case "LunarNewYearSuccesfulArtifactTurnIns": // Early 2017
                                 case "LunarNewYearRoosterEventCompleted":    // Early 2017
                                 case "KilledTreasureGoblin":
