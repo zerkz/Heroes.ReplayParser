@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <DefineConstants Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">NET_FRAMEWORK</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,5 +13,4 @@
     <Folder Include="BZip2\" />
     <Folder Include="Zlib\" />
   </ItemGroup>
-
 </Project>
