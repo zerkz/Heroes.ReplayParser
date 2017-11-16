@@ -8,7 +8,7 @@
         /// <summary>
         /// Latest build supported by the parser
         /// </summary>
-        public static int LatestSupportedBuild => 58209;
+        public static int LatestSupportedBuild => 59657;
 
         /// <summary> Gets a list of all messages which took place during the game. </summary>
         public List<Message> Messages { get; set; } = new List<Message>();
