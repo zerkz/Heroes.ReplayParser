@@ -11,7 +11,7 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            var heroesAccountsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Heroes of the Storm\Accounts");
+            var heroesAccountsFolder = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "Documents", @"Heroes of the Storm\Accounts");
             var randomReplayFileName = Directory.GetFiles(heroesAccountsFolder, "*.StormReplay", SearchOption.AllDirectories).OrderBy(i => Guid.NewGuid()).First();
 
             // Use temp directory for MpqLib directory permissions requirements

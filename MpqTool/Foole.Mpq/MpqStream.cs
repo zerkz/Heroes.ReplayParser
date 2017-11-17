@@ -241,7 +241,7 @@ namespace Foole.Mpq
 
             int bytestocopy = Math.Min((int)(_currentData.Length - _position), count);
 
-            Array.Copy(_currentData, _position, buffer, offset, bytestocopy);
+            Array.Copy(_currentData, (int)_position, buffer, offset, bytestocopy);
 
             _position += bytestocopy;
             return bytestocopy;

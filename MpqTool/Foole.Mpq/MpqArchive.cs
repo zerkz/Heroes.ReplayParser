@@ -79,7 +79,7 @@ namespace Foole.Mpq
 		public void Dispose()
 		{
             if (BaseStream != null)
-                BaseStream.Close();
+                BaseStream.Dispose();
 		}
 
 		private void Init()
