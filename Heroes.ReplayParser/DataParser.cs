@@ -106,7 +106,7 @@ namespace Heroes.ReplayParser
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.UnexpectedResult, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Timestamp < new DateTime(2014, 10, 6, 0, 0, 0, DateTimeKind.Utc))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PreAlphaWipe, new Replay { ReplayBuild = replay.ReplayBuild });
-            else if (replay.Players.Any(i => i.PlayerType == PlayerType.Computer || i.Character == "Random Hero" || i.Name.Contains(' ')))
+            else if (replay.Players.Count(i => i.PlayerType == PlayerType.Computer || i.Character == "Random Hero" || i.Name.Contains(' ')) > (replay.GameMode == GameMode.Brawl ? 5 : 0))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.ComputerPlayerFound, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (!allowPTRRegion && replay.Players.Any(i => i.BattleNetRegionId >= 90 /* PTR/Test Region */))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PTRRegion, new Replay { ReplayBuild = replay.ReplayBuild });

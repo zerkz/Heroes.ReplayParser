@@ -1,3 +1,11 @@
+// Support 4 different decompression libraries: DotNetZip, bzip2.net, SharpCompress, SharpZipLib
+// Listed in order of decreasing performance, SharpZipLib is considerably slower than the others
+//#define WITH_DOTNETZIP
+//#define WITH_BZIP2NET
+//#define WITH_SHARPCOMPRESS
+//#define WITH_SHARPZIPLIB
+
+
 //
 // MpqHuffman.cs
 //
