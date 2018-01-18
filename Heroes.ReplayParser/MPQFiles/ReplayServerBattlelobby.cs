@@ -248,14 +248,14 @@
 
                     replay.ClientListByUserID[player].BattleNetTId = TId;
 
-                    // next 18 bytes
+                    // next 30 bytes
                     bitReader.ReadBytes(4); // same for all players
                     bitReader.ReadBytes(26);
 
                     // repeat of the collection section above
                     if (replay.ReplayBuild >= 51609)
                     {
-                        int size = (int)bitReader.Read(12); // 3 bytes max 4095
+                        int size = (int)bitReader.Read(12); // max 4095
                         if (size != collectionSize)
                             throw new Exception("size and collectionSize not equal");
 
@@ -273,7 +273,7 @@
                             bitReader.ReadInt32();
 
                         // each byte has a max value of 0x7F (127)
-                        bitReader.stream.Position = bitReader.stream.Position = bitReader.stream.Position + (collectionSize * 2);
+                        bitReader.stream.Position = bitReader.stream.Position + (collectionSize * 2);
                         bitReader.Read(1);
                     }
 
@@ -300,6 +300,7 @@
                 }
 
                 // some more data after this
+                // there is also a CSTM string down here, if it exists, the game is a custom game
             }
         }
 
@@ -426,7 +427,7 @@
             // theres some HeroICONs and other repetitive stuff
         }
 
-        // Detect the change that happended in build 47479 on November 2, 2016
+        // Detect the change that happened in build 47479 on November 2, 2016
         private static bool DetectBattleTagChangeBuild47479(Replay replay, BitReader bitReader)
         {
             if (replay.ReplayBuild != 47479)
