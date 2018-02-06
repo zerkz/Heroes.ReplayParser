@@ -116,7 +116,7 @@ namespace Heroes.ReplayParser
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Success, replay);
         }
 
-        private static void ParseReplayArchive(Replay replay, MpqArchive archive, bool ignoreErrors, bool detailedBattleLobbyParsing)
+        private static void ParseReplayArchive(Replay replay, MpqArchive archive, bool ignoreErrors, bool detailedBattleLobbyParsing = false)
         {
             archive.AddListfileFilenames();
 
@@ -166,15 +166,15 @@ namespace Heroes.ReplayParser
                     player.Talents = talentGameEventsDictionary[player];
             }
 
-			// Replay Server Battlelobby
-			if(!ignoreErrors && archive.Any(i => i.Filename == ReplayServerBattlelobby.FileName))
+            // Replay Server Battlelobby
+            if (!ignoreErrors && archive.Any(i => i.Filename == ReplayServerBattlelobby.FileName))
             {
-                if (!detailedBattleLobbyParsing)
-                    ReplayServerBattlelobby.GetBattleTags(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
-                else
+                if (detailedBattleLobbyParsing)
                     ReplayServerBattlelobby.Parse(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
+                else
+                    ReplayServerBattlelobby.GetBattleTags(replay, GetMpqFile(archive, ReplayServerBattlelobby.FileName));
             }
-				
+
             // Parse Unit Data using Tracker events
             Unit.ParseUnitData(replay);
 
