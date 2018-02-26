@@ -23,7 +23,8 @@ namespace Heroes.ReplayParser
             PreAlphaWipe = 13,
             FileSizeTooLarge = 14,
             PTRRegion = 15,
-            ParserException
+            ParserException,
+            SuccessReplayDetail, // successfull but needs player verification check
         }
 
         public static readonly Dictionary<string, Tuple<double, double, double, double>> MapOffsets = new Dictionary<string, Tuple<double, double, double, double>>
@@ -112,6 +113,8 @@ namespace Heroes.ReplayParser
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.PTRRegion, new Replay { ReplayBuild = replay.ReplayBuild });
             else if (replay.Players.Count(i => i.IsWinner) != 5 || replay.Players.Length != 10 || (replay.GameMode != GameMode.TeamLeague && replay.GameMode != GameMode.HeroLeague && replay.GameMode != GameMode.UnrankedDraft && replay.GameMode != GameMode.QuickMatch && replay.GameMode != GameMode.Custom && replay.GameMode != GameMode.Brawl))
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.UnexpectedResult, new Replay { ReplayBuild = replay.ReplayBuild });
+            else if (!replay.ReplayDetailParsedSuccessfully)
+                return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.SuccessReplayDetail, replay);
             else
                 return new Tuple<ReplayParseResult, Replay>(ReplayParseResult.Success, replay);
         }

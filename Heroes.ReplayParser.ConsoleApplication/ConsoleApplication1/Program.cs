@@ -12,7 +12,7 @@ namespace ParserConsole
         {
             var heroesAccountsFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), @"Heroes of the Storm\Accounts");
             //var randomReplayFileName = Directory.GetFiles(heroesAccountsFolder, "*.StormReplay", SearchOption.AllDirectories).OrderBy(i => Guid.NewGuid()).First();
-            var randomReplayFileName = @"C:\Users\koliva\Documents\Heroes of the Storm\Accounts\77558904\1-Hero-1-1527252\Replays\Multiplayer\Haunted Mines (154).StormReplay";
+            var randomReplayFileName = @"C:\Users\koliva\Documents\Heroes of the Storm\ReplayDetail\Infernal Shrines (127).StormReplay";
             // Use temp directory for MpqLib directory permissions requirements
             var tmpPath = Path.GetTempFileName();
             File.Copy(randomReplayFileName, tmpPath, overwrite: true);
@@ -24,10 +24,11 @@ namespace ParserConsole
                 var replayParseResult = DataParser.ParseReplay(tmpPath, ignoreErrors: false, deleteFile: false, allowPTRRegion:true, detailedBattleLobbyParsing: true);
 
                 // If successful, the Replay object now has all currently available information
-                if (replayParseResult.Item1 == DataParser.ReplayParseResult.Success)
+                if (replayParseResult.Item1 == DataParser.ReplayParseResult.Success || replayParseResult.Item1 == DataParser.ReplayParseResult.SuccessReplayDetail)
                 {
                     var replay = replayParseResult.Item2;
 
+                    Console.WriteLine("Parse Result: " + replayParseResult.Item1);
                     Console.WriteLine("Replay Build: " + replay.ReplayBuild);
                     Console.WriteLine("Map: " + replay.Map);
                     foreach (var player in replay.Players.OrderByDescending(i => i.IsWinner))
