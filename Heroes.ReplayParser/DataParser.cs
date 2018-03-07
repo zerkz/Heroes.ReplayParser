@@ -153,7 +153,7 @@ namespace Heroes.ReplayParser
             }
             catch
             {
-                replay.GameEvents = new List<GameEvent>();
+                throw new Exception("GameEvents failed to parse");
             }
 
             {
