@@ -184,7 +184,8 @@
         HeroLeague = 1 << 6,
         TeamLeague = 1 << 7,
         UnrankedDraft = 1 << 8,
-        Brawl = 1 << 9
+        Brawl = 1 << 9,
+        StormLeague = 1 << 10
     }
 
     public enum GameSpeed

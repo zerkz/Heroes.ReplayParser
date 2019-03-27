@@ -117,6 +117,10 @@
                             replay.GameMode = GameMode.TeamLeague;
                             break;
 
+                        case 50091:
+                            replay.GameMode = GameMode.StormLeague;
+                            break;
+
                         default:
                             replay.GameMode = GameMode.Unknown;
                             break;
