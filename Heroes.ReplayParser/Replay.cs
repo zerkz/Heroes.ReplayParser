@@ -8,7 +8,7 @@
         /// <summary>
         /// Latest build supported by the parser
         /// </summary>
-        public static int LatestSupportedBuild => 71449;
+        public static int LatestSupportedBuild => 73016;
 
         public bool ReplayDetailParsedSuccessfully { get; set; } = true;
 
